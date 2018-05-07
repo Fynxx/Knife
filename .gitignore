@@ -1,0 +1,68 @@
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Oo]bj/
+[Bb]uild
+[Bb]uilds/
+UnityGenerated/
+[Ll]ibrary/
+Assets/AssetStoreTools*
+sysinfo.txt
+*.stackdump
+# Visual Studio 2015 cache directory
+/.vs/
+# Unity3D generated meta files
+*.pidb.meta
+# Unity3D Generated File On Crash Reports
+sysinfo.txt
+# Android application file
+*.apk
+# Unity package file
+*.unitypackage
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+[Ee]xported[Oo]bj/
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.tmp
+*.pdb
+
+# ============ #
+# OS generated #
+# ============ #
+# MacOS finder metadata file
+.DS_Store
+._*
+# MacOS spotlight index data
+.Spotlight-V100
+# MacOS deleted data storage
+.Trashes
+# Windows image file caches
+ehthumbs.db
+# Windows image file caches
+[Tt]humbs.db
+# Weard MacOS files
+*\?.*
+Icon\r
+# Folder config file
+Desktop.ini
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+# Windows Installer file
+*.cab
+*.msi
+*.msm
+*.msp
+# Windows shortcuts
+*.lnk
