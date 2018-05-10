@@ -41,6 +41,7 @@ public class ShurikenSpawner : MonoBehaviour {
 
 		if (roundManager.currentRound == round.Ended || roundManager.currentRound == round.Killed) {
 			speed = 0;
+			//NextSpawnDirection();
 		}
 	}
 

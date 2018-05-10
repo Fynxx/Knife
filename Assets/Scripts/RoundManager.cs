@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using TapticPlugin;
 
 public enum round {Fresh, Playing, Reset, Ended, Killed, Settings, Hold};
 
@@ -51,7 +52,8 @@ public class RoundManager : MonoBehaviour {
 	void Update () {
 		ChangeRound ();
         Rounds();
-        //		DangerSwitcher ();
+		//		DangerSwitcher ();
+		print(currentRound);
 	}
 
 	public void ChangeRound(){
@@ -71,33 +73,40 @@ public class RoundManager : MonoBehaviour {
                     {                    
 						switch (touch) {
 						case TouchPhase.Began:
-							currentRound = round.Reset;
-							isDead = false;
+    						    TapticManager.Impact(ImpactFeedback.Light);
+    							currentRound = round.Reset;
+    							isDead = false;
 							break;
 						case TouchPhase.Moved:
 						case TouchPhase.Stationary:
-							if (isDead == false) {
-								currentRound = round.Playing;
-                                isPlaying = true;
-							} else {
-								currentRound = round.Killed;
-							}
+    							if (isDead == false) {
+    								currentRound = round.Playing;
+                                    isPlaying = true;
+    							} else {
+    								currentRound = round.Killed;
+    							}
 							break;
 						case TouchPhase.Ended:
-                            if (isPlaying == true)
-                            {
-                                if (score < 1)
+                                if (isPlaying == true)
                                 {
-                                    currentRound = round.Hold;
+									if (score < 1 && !isDead)
+									{
+										currentRound = round.Hold;
+										TapticManager.Notification(NotificationFeedback.Warning);
+									}
+									else
+									{
+										currentRound = round.Ended;
+										isPlaying = false;
+										if (!isDead)
+										{
+											TapticManager.Notification(NotificationFeedback.Error);
+										}
+                                    }
                                 }
-                                else { 
-                                currentRound = round.Ended;
-                                isPlaying = false;
-                                }
-                            }
 							break;
 						default:
-							currentRound = round.Fresh;
+							    currentRound = round.Fresh;
 							break;
 						}
                     } else {
@@ -117,31 +126,32 @@ public class RoundManager : MonoBehaviour {
 	public void Rounds(){ 
 		switch (currentRound) {
 		case round.Fresh:
-			score = 0;
+			    score = 0;
 			break;
 		case round.Reset:
-			score = 0;
-			_nextDangerTimer = 0;
-			_nextDangerShot = _nextDangerResetValue;
-			currentDanger = danger.None;
-			currentRound = round.Playing;
-			dangerSpawner.weapon.transform.position = new Vector3 (0, 7, 0);
-            hitPoints = 1;
+				dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
+    			score = 0;
+    			_nextDangerTimer = 0;
+    			_nextDangerShot = _nextDangerResetValue;
+    			currentDanger = danger.None;
+    			currentRound = round.Playing;
+                hitPoints = 1;
 			break;
 		case round.Playing:
-            time = 0;
+                time = 0;
 			break;
 		case round.Ended:
 		case round.Killed:
-            time += Time.deltaTime;
-            if (time < .5f){
-                Handheld.Vibrate();
-            }
-			
-			if (score > highscore) {
-				highscore = score;
-				Save ();
-			}
+    //        time += Time.deltaTime;
+    //        if (time < .01f){
+    //            //Handheld.Vibrate();
+				//TapticManager.Notification(NotificationFeedback.Error);
+            //}
+
+    			if (score > highscore) {
+    				highscore = score;
+    				Save ();
+    			}
 			break;
 		case round.Settings:
 			break;
