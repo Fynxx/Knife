@@ -23,7 +23,7 @@ public class Shuriken : Dangers {
 
 	void Spin(){
 		if (roundManager.currentRound == round.Playing) {
-			transform.Rotate (Vector3.back, Time.deltaTime * 1000);
+			transform.Rotate (Vector3.back, Time.deltaTime * 750);
 			sprenderer.sprite = rotating;
 		} else {
 			sprenderer.sprite = still;

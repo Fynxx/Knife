@@ -10,7 +10,7 @@ public class Dangers : MonoBehaviour {
 
 	public void AssignScript(){
 		roundManager = GameObject.Find ("GameManager").GetComponent<RoundManager> ();
-		bloodSplatter = GameObject.Find ("BloodSplatter");
+		bloodSplatter = GameObject.Find ("BloodSplatterPivot");
 	}
 
 

@@ -24,17 +24,17 @@ public class ColorChanger : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        background.GetComponent<Renderer>().material.color = lerpingColor;
-        if (rm.currentRound == round.Playing || rm.currentRound == round.Fresh){
-            ChangeBackgroundColor(backgroundColor, startingColor);
-        }
+        //background.GetComponent<Renderer>().material.color = lerpingColor;
+        //if (rm.currentRound == round.Playing || rm.currentRound == round.Fresh){
+        //    ChangeBackgroundColor(backgroundColor, startingColor);
+        //}
 
-        if (rm.score > rm.highscore){
-            ChangeBackgroundColor(startingColor, recordColor);
-        }
-        if (rm.currentRound == round.Killed || rm.currentRound == round.Ended){
-            ChangeBackgroundColor(backgroundColor, deadColor);
-        }
+        //if (rm.score > rm.highscore){
+        //    ChangeBackgroundColor(startingColor, recordColor);
+        //}
+        //if (rm.currentRound == round.Killed || rm.currentRound == round.Ended){
+        //    ChangeBackgroundColor(backgroundColor, deadColor);
+        //}
 
 	}
 
