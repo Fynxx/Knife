@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TapticPlugin;
 
 public class Dangers : MonoBehaviour {
 
@@ -9,7 +10,7 @@ public class Dangers : MonoBehaviour {
 
 	public void AssignScript(){
 		roundManager = GameObject.Find ("GameManager").GetComponent<RoundManager> ();
-		bloodSplatter = GameObject.Find ("BloodSplatter");
+		bloodSplatter = GameObject.Find ("BloodSplatterPivot");
 	}
 
 
@@ -21,6 +22,7 @@ public class Dangers : MonoBehaviour {
 //				bloodSplatter.transform.position = other.transform.position;
                 roundManager.isDead = true;
 				Instantiate(bloodSplatter, other.transform.position, Quaternion.identity);
+				TapticManager.Notification(NotificationFeedback.Error);
 			}
 		}
 	}
