@@ -13,38 +13,37 @@ public class RoundManager : MonoBehaviour {
 
 	public round currentRound;
     public StateManager stateManager;
-	public enum danger {None, Knife, Shuriken, Grater};
-	public danger currentDanger;
+	//public enum danger {None, Knife, Shuriken, Grater};
+	//public danger currentDanger;
 
 	public float time;
+
 	public int score;
 	public int highscore;
     public int lives;
+	public int hitPoints;
 
 	public Text scoreLabel;
 	public bool isDead;
 	public bool inSettings;
     public bool inGame;
     public bool isPlaying;
-    public int hitPoints;
+    
+	//public ShurikenSpawner dangerSpawner;
+	public PeakNShoot peakNShoot;
 
-	public Knife dangerKnife;
-	public ShurikenSpawner dangerSpawner;
-
-	private float _nextDangerTimer;
-	private float _nextDangerShot;
-	private float _nextDangerResetValue;
+	//private float _nextDangerTimer;
+	//private float _nextDangerShot;
 	private PlayerData data;
 
 	void Start () {
         //scoreLabel = GameObject.Find ("ScoreLabel").GetComponent<Text> ();
 		isDead = false;
-		currentDanger = danger.None;
+		//currentDanger = danger.None;
         currentRound = round.Fresh;
-		dangerKnife = GameObject.Find ("Knife").GetComponent<Knife> ();
-		dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
-		_nextDangerResetValue = 2.0f;
-		_nextDangerShot = _nextDangerResetValue;
+		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
+		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		//_nextDangerShot = _nextDangerResetValue;
 		Load ();
         isPlaying = false;
 	}
@@ -53,7 +52,8 @@ public class RoundManager : MonoBehaviour {
 		ChangeRound ();
         Rounds();
 		//		DangerSwitcher ();
-		print(currentRound);
+		//print(currentRound);
+		//print(Input.GetTouch(0).pressure);
 	}
 
 	public void ChangeRound(){
@@ -129,13 +129,18 @@ public class RoundManager : MonoBehaviour {
 			    score = 0;
 			break;
 		case round.Reset:
-				dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
+				//peakNShoot.Initiation();
+				//dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
+				peakNShoot.EmptyStars();
     			score = 0;
-    			_nextDangerTimer = 0;
-    			_nextDangerShot = _nextDangerResetValue;
-    			currentDanger = danger.None;
+				peakNShoot.starsInGame = 1;
+				peakNShoot.starMultiplier = 0;
+    			//_nextDangerTimer = 0;
+    			//_nextDangerShot = _nextDangerResetValue;
+				hitPoints = 1;
+				peakNShoot.CreateStars();
+    			//currentDanger = danger.None;
     			currentRound = round.Playing;
-                hitPoints = 1;
 			break;
 		case round.Playing:
                 time = 0;

@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class PowerUpSpawner : MonoBehaviour {
 
-    public float oneTenthHeight;
+	public enum powerups { Shield, Slowmo, MinOne };
+	public powerups nextPowerUp;
+
+	public Shield shield;
+
+	public enum state { Idle, OnField, PickedUp, Reset};
+	public state currentSpawnState;
+
+	public float oneTenthHeight;
     public float oneSixthWidth;
 
     public RoundManager roundManager;
 
-    public PowerUp powerUp;
+	public PowerUp powerUp;
 
     private int width;
     private int height;
     public int powerUpCounter;
     public int powerUpMultiplier;
+
+	public int coolDown;
+	public int coolDownMin = 1;
+	public int coolDownMax = 2;
 
     private Vector3 nextPowerUpPosition;
     public Vector3[] powerUpPositions;
@@ -30,8 +42,10 @@ public class PowerUpSpawner : MonoBehaviour {
 
 	void Start () {
         roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
-        powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
-
+        //powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
+		currentSpawnState = state.Reset;
+		nextPowerUp = powerups.Shield;
+		powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
         //nextPowerUpPosition = Camera.main.ScreenToWorldPoint(topRight);
         //transform.position = nextPowerUpPosition;
 
@@ -41,22 +55,42 @@ public class PowerUpSpawner : MonoBehaviour {
         //powerUpPositions[2] = bottomRight;
         //powerUpPositions[3] = bottomLeft;
 
-        PowerUpMultiplier();
+        //PowerUpMultiplier();
 	}
 	
 	void Update () 
     {
-        //if (roundManager.isPlaying)
-        //{
-        //    if (powerUp.isPickedUp == false)
-        //    {
-        //        if (powerUpCounter >= powerUpMultiplier)
-        //        {
-        //            powerUpCounter = 1;
-        //            PlacePowerUp();
-        //        }
-        //    }
-        //}
+        if (roundManager.isPlaying)
+        {
+			switch (currentSpawnState)
+			{
+				case state.Idle:
+					if (coolDown == 0){
+						currentSpawnState = state.OnField;
+					}
+				    break;
+				case state.OnField:
+					coolDown = 0;
+					powerUp.Shield();
+                    PlacePowerUp();
+					powerUp.currentState = PowerUp.state.OnField;
+                    break;
+				case state.PickedUp:
+
+                    break;
+				case state.Reset:
+					coolDown = Random.Range(coolDownMin, coolDownMax);
+					currentSpawnState = state.Idle;
+                    break;
+				default:
+					print("CurrentSpawnState is set to Default, this should not happen");
+					break;
+			}
+        }
+	}
+
+	void PickRandomPowerup(){
+		nextPowerUp = (powerups)Random.Range(0, 3);
 	}
 
     void SetRandomPosition()
@@ -68,14 +102,12 @@ public class PowerUpSpawner : MonoBehaviour {
 
     void PlacePowerUp()
     {
-        if (!powerUp.isPickedUp)
-        {
-            SetRandomPosition();
-            nextPowerUpPosition = Camera.main.ScreenToWorldPoint(nextPowerUpPosition);
-            powerUp.isAlive = true;
-            powerUp.transform.position = nextPowerUpPosition;
-            //Instantiate(powerUp, nextPowerUpPosition, Quaternion.identity);
-        }
+        SetRandomPosition();
+        nextPowerUpPosition = Camera.main.ScreenToWorldPoint(nextPowerUpPosition);
+		//powerUp.isAlive = true;
+		powerUp.currentState = PowerUp.state.OnField;
+        powerUp.transform.position = nextPowerUpPosition;
+        //Instantiate(powerUp, nextPowerUpPosition, Quaternion.identity);
     }
 
     void PowerUpMultiplier()

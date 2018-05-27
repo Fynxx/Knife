@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class PowerUp : MonoBehaviour {
 
     public const float lifeValue = 10f;
     public const float pickupTimerValue = 1f;
+    //public const float 
+
+	public enum state { OnField, PickingUp, PickedUp, Unavailable };
+	public state currentState;
+
+	public PowerUp currentPowerup;
+	public Shield shield;
 
     public float pickupTimer;
     public Player player;
@@ -15,77 +23,68 @@ public class PowerUp : MonoBehaviour {
     public float oneSixthWidth;
     public float powerUpLife;
 
-    public bool isAlive;
-    public bool isPickedUp;
-
     public GameObject playerSprite;
-    public GameObject shield;
+	public GameObject GOshield;
 
     private void Awake()
     {
         player = GameObject.Find("FingerTarget").GetComponent<Player>();
         playerSprite = GameObject.Find("FingerSprite");
-        shield = GameObject.Find("Shield");
+        GOshield = GameObject.Find("Shield");
         roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
+		shield = GameObject.Find("ShieldPickUp").GetComponent<Shield>();
         powerUpLife = lifeValue;
     }
 
 	void Start () {
         
         pickupTimer = pickupTimerValue;
-        //oneTenthHeight = Screen.height / 10;
-        //oneSixthWidth = Screen.width / 6;
+        oneTenthHeight = Screen.height / 10;
+        oneSixthWidth = Screen.width / 6;
+		currentState = state.Unavailable;
         //topRight = new Vector3(Screen.width - oneSixthWidth, Screen.height - oneTenthHeight, 10);
         //topLeft = new Vector3(Screen.width - oneSixthWidth * 5, Screen.height - oneTenthHeight, 10);
         //bottomRight = new Vector3(Screen.width - oneSixthWidth, Screen.height - oneTenthHeight * 9, 10);
         //bottomLeft = new Vector3(Screen.width - oneSixthWidth * 5, Screen.height - oneTenthHeight * 9, 10);
         //transform.position = Camera.main.ScreenToWorldPoint(bottomRight);
 	}
+
+	void OnTriggerStay2D(Collider2D other)
+    {
+		if (other.tag == "Player" && currentState == state.OnField)
+        {
+			currentState = state.PickingUp;
+		} else {
+			currentState = state.Unavailable;
+		}
+    }
 	
 	void Update () {
-        //if (isAlive == true)
-        //{
-        //    LifeTime();
-        //} 
-        //else 
-        //{
-        //    powerUpLife = lifeValue;
-        //}
-        //if (roundManager.life == 2)
-        //{
-        //    shield.transform.position = playerSprite.transform.position;
-        //    shield.transform.parent = playerSprite.transform;
-        //}
-        //else if (roundManager.life == 1)
-        //{
-        //    shield.transform.parent = null;
-        //    shield.transform.position = new Vector3(100, 0, 0);
-        //    isPickedUp = false;
-        //}
-        //if (!roundManager.isPlaying)
-        //{
-        //    transform.position = new Vector3(100, 0, 0);
-        //}
+		print(currentState);
+		switch (currentState)
+		{
+			case state.OnField:
+				Shield();
+				LifeTime();
 
-
+				break;
+			case state.PickingUp:
+				    pickupTimer--;
+                break;
+			case state.PickedUp:
+    				currentPowerup.transform.position = playerSprite.transform.position;
+    				currentPowerup.transform.parent = playerSprite.transform;
+				break;
+			case state.Unavailable:
+    				currentPowerup.transform.parent = null;
+                    currentPowerup.transform.position = new Vector3(100, 0, 0);
+                break;
+			default:
+				break;
+		}
         //Powerup spawnt ook al is er een opgepakt.
 	}
-
-    void OnTriggerStay2D(Collider2D other)
-	{
-        if (other.tag == "Player")
-        {
-            pickupTimer -= Time.deltaTime;
-
-            if (pickupTimer <= 0)
-            {
-                isPickedUp = true;
-                roundManager.hitPoints = 2;
-                isAlive = false;
-                transform.position = new Vector3(100, 0, 0);
-            }
-        }
-	}
+   
 
     void OnTriggerExit2D(Collider2D other)
 	{
@@ -97,10 +96,10 @@ public class PowerUp : MonoBehaviour {
         powerUpLife -= Time.deltaTime;
         if (powerUpLife < 0)
         {
-            isAlive = false;
+			currentState = state.PickedUp;
             powerUpLife = lifeValue;
         }
-        if (!isAlive)
+		if (currentState != state.OnField)
         {
             transform.position = new Vector3(100, 0, 0);
         }
@@ -111,9 +110,14 @@ public class PowerUp : MonoBehaviour {
 
     }
 
-}
-
-public class Shield : PowerUp {
-
+	public void Shield(){
+		currentPowerup = shield;
+	}
+	public void SlowMo(){
+		
+	}
+	public void Reduce(){
+		
+	}
 
 }

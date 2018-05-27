@@ -27,23 +27,24 @@ public class ShurikenSpawner : MonoBehaviour {
 		locationSet = false;
         maxXpos = 4.5f;
         maxYpos = 7f;
+		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
+        powerUpSpawner = GameObject.Find("PowerUpSpawner").GetComponent<PowerUpSpawner>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
-        powerUpSpawner = GameObject.Find("PowerUpSpawner").GetComponent<PowerUpSpawner>();
-		time = Time.deltaTime;
-		randomX = Random.Range(-1.5f, 1.5f);
-		randomY = Random.Range(-3.5f, 3.5f);
-		NextSpawnDirection ();
-		rmScore = roundManager.score;
+	//void Update () 
+	//{        
+	//	time = Time.deltaTime;
+	//	randomX = Random.Range(-1.5f, 1.5f);
+	//	randomY = Random.Range(-3.5f, 3.5f);
+	//	NextSpawnDirection ();
+	//	rmScore = roundManager.score;
 
-		if (roundManager.currentRound == round.Ended || roundManager.currentRound == round.Killed) {
-			speed = 0;
-			//NextSpawnDirection();
-		}
-	}
+	//	if (roundManager.currentRound == round.Ended || roundManager.currentRound == round.Killed) {
+	//		speed = 0;
+	//		//NextSpawnDirection();
+	//	}
+	//}
 
 	void NextSpawnDirection(){
 		if (roundManager.currentRound == round.Playing) {

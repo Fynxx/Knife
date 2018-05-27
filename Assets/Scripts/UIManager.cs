@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
-{
-
+{   
     public Text scoreLabelPlayLeft;
     public Text scoreLabelPlayRight;
     public Text scoreLabelEnded;
@@ -34,6 +33,7 @@ public class UIManager : MonoBehaviour
     public RoundManager roundManager;
     public StateManager stateManager;
     public ShurikenSpawner spawner;
+	public PeakNShoot peakNShoot;
 
     public GameObject player;
     public GameObject raycastBlockerAd;
@@ -69,6 +69,7 @@ public class UIManager : MonoBehaviour
         roundManager = GetComponent<RoundManager>();
         stateManager = GameObject.Find("GameManager").GetComponent<StateManager>();
         spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
+		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 
         player = GameObject.Find("FingerTarget");
 
@@ -183,27 +184,27 @@ public class UIManager : MonoBehaviour
     {
         if (roundManager.currentRound == round.Playing)
         {
-            switch (spawner.spawnDirection)
+			switch (peakNShoot.nextDirection)
             {
-                case ShurikenSpawner.Direction.North:
+				case PeakNShoot.direction.North:
                     dangerNorth.enabled = true;
                     dangerEast.enabled = false;
                     dangerSouth.enabled = false;
                     dangerWest.enabled = false;
                     break;
-                case ShurikenSpawner.Direction.East:
+				case PeakNShoot.direction.East:
                     dangerNorth.enabled = false;
                     dangerEast.enabled = true;
                     dangerSouth.enabled = false;
                     dangerWest.enabled = false;
                     break;
-                case ShurikenSpawner.Direction.South:
+				case PeakNShoot.direction.South:
                     dangerNorth.enabled = false;
                     dangerEast.enabled = false;
                     dangerSouth.enabled = true;
                     dangerWest.enabled = false;
                     break;
-                case ShurikenSpawner.Direction.West:
+				case PeakNShoot.direction.West:
                     dangerNorth.enabled = false;
                     dangerEast.enabled = false;
                     dangerSouth.enabled = false;
