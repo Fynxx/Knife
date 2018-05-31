@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PowerUpSpawner : MonoBehaviour {
 
-	public enum powerups { Shield, Slowmo, MinOne };
+	public enum powerups { Shield, Slowmo, Reduce };
 	public powerups nextPowerUp;
 
 	public Shield shield;
 
-	public enum state { Idle, OnField, PickedUp, Reset};
+	public enum state { Idle, Spawned, Reset};
 	public state currentSpawnState;
 
 	public float oneTenthHeight;
@@ -23,10 +23,10 @@ public class PowerUpSpawner : MonoBehaviour {
     private int height;
     public int powerUpCounter;
     public int powerUpMultiplier;
-
-	public int coolDown;
-	public int coolDownMin = 1;
-	public int coolDownMax = 2;
+    
+	public float coolDown;
+	public float coolDownMin;
+	public float coolDownMax;
 
     private Vector3 nextPowerUpPosition;
     public Vector3[] powerUpPositions;
@@ -38,6 +38,9 @@ public class PowerUpSpawner : MonoBehaviour {
 
         oneTenthHeight = Screen.height / 10;
         oneSixthWidth = Screen.width / 6;
+
+		coolDownMin = 5f;
+		coolDownMax = 10f;
 	}
 
 	void Start () {
@@ -45,7 +48,9 @@ public class PowerUpSpawner : MonoBehaviour {
         //powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
 		currentSpawnState = state.Reset;
 		nextPowerUp = powerups.Shield;
-		powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
+		//powerUp = GameObject.Find("PowerUp").GetComponent<PowerUp>();
+		shield = GameObject.Find("ShieldPickUp").GetComponent<Shield>();
+		powerUp = shield;
         //nextPowerUpPosition = Camera.main.ScreenToWorldPoint(topRight);
         //transform.position = nextPowerUpPosition;
 
@@ -58,36 +63,40 @@ public class PowerUpSpawner : MonoBehaviour {
         //PowerUpMultiplier();
 	}
 	
-	void Update () 
-    {
-        if (roundManager.isPlaying)
-        {
-			switch (currentSpawnState)
-			{
-				case state.Idle:
-					if (coolDown == 0){
-						currentSpawnState = state.OnField;
-					}
-				    break;
-				case state.OnField:
-					coolDown = 0;
-					powerUp.Shield();
-                    PlacePowerUp();
-					powerUp.currentState = PowerUp.state.OnField;
-                    break;
-				case state.PickedUp:
-
-                    break;
-				case state.Reset:
-					coolDown = Random.Range(coolDownMin, coolDownMax);
-					currentSpawnState = state.Idle;
-                    break;
-				default:
-					print("CurrentSpawnState is set to Default, this should not happen");
-					break;
-			}
-        }
-	}
+	//void Update () 
+ //   {
+	//	//print(currentSpawnState);
+ //       if (roundManager.isPlaying)
+ //       {
+	//		switch (currentSpawnState)
+	//		{
+	//			case state.Idle:
+	//				coolDown -= Time.deltaTime;
+	//				if (powerUp.currentState != PowerUp.state.PickedUp)
+	//				{
+	//					if (coolDown <= 0f)
+	//					{
+	//						PlacePowerUp();
+	//						currentSpawnState = state.Spawned;
+	//					}
+	//				}
+	//			    break;
+	//			case state.Spawned:
+	//				coolDown = 0f;
+	//				powerUp.Shield();
+	//				//powerUp.currentState = PowerUp.state.OnField;
+	//				currentSpawnState = state.Reset;
+ //                   break;
+	//			case state.Reset:
+	//				coolDown = Random.Range(coolDownMin, coolDownMax);
+	//				currentSpawnState = state.Idle;
+ //                   break;
+	//			default:
+	//				print("CurrentSpawnState is set to Default, this should not happen");
+	//				break;
+	//		}
+ //       }
+	//}
 
 	void PickRandomPowerup(){
 		nextPowerUp = (powerups)Random.Range(0, 3);
@@ -100,23 +109,14 @@ public class PowerUpSpawner : MonoBehaviour {
         nextPowerUpPosition = new Vector3(Screen.width - oneSixthWidth * randomizerW, Screen.height - oneTenthHeight * randomizerH, 10);
     }
 
-    void PlacePowerUp()
-    {
-        SetRandomPosition();
-        nextPowerUpPosition = Camera.main.ScreenToWorldPoint(nextPowerUpPosition);
+	void PlacePowerUp()
+	{
+		SetRandomPosition();
+		nextPowerUpPosition = Camera.main.ScreenToWorldPoint(nextPowerUpPosition);
 		//powerUp.isAlive = true;
+		powerUp.transform.position = nextPowerUpPosition;
 		powerUp.currentState = PowerUp.state.OnField;
-        powerUp.transform.position = nextPowerUpPosition;
-        //Instantiate(powerUp, nextPowerUpPosition, Quaternion.identity);
-    }
-
-    void PowerUpMultiplier()
-    {
-        powerUpMultiplier = Random.Range(5, 15);
-    }
-
-    public void AddToCounter()
-    {
-        powerUpCounter++;
-    }
+		//powerUp.transform.position = nextPowerUpPosition;
+		//Instantiate(powerUp, nextPowerUpPosition, Quaternion.identity);
+	}
 }

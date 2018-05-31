@@ -75,7 +75,7 @@ public class ShurikenSpawner : MonoBehaviour {
                     if (weapon.transform.position.y < -maxYpos) {
 					ChooseRandomDirection ();
                         AddToScore(1);
-                        powerUpSpawner.AddToCounter();
+                        //powerUpSpawner.AddToCounter();
 				}
 				break;
 			case Direction.East:
@@ -83,7 +83,7 @@ public class ShurikenSpawner : MonoBehaviour {
                     if (weapon.transform.position.x < -maxXpos) {
 					ChooseRandomDirection ();
                         AddToScore(1);
-                        powerUpSpawner.AddToCounter();
+                        //powerUpSpawner.AddToCounter();
 				}
 				break;
 			case Direction.West:
@@ -91,7 +91,7 @@ public class ShurikenSpawner : MonoBehaviour {
                     if (weapon.transform.position.x > maxXpos) {
 					ChooseRandomDirection ();
                         AddToScore(1);
-                        powerUpSpawner.AddToCounter();
+                        //powerUpSpawner.AddToCounter();
 				}
 				break;	
 			case Direction.South:
@@ -99,7 +99,7 @@ public class ShurikenSpawner : MonoBehaviour {
                     if (weapon.transform.position.y > maxYpos) {
 					ChooseRandomDirection ();
                         AddToScore(1);
-                        powerUpSpawner.AddToCounter();
+                        //powerUpSpawner.AddToCounter();
 				}
 				break;
 			default:

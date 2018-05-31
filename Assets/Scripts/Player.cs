@@ -40,7 +40,7 @@ public class Player : MonoBehaviour {
             //roundManager.isDead = true;
             if (roundManager.hitPoints == 0)
             {
-                //              bloodSplatter.transform.position = other.transform.position;
+				//              bloodSplatter.transform.position = other.transform.position;
                 roundManager.isDead = true;
                 Instantiate(bloodSplatter, other.transform.position, Quaternion.identity);
                 TapticManager.Notification(NotificationFeedback.Error);

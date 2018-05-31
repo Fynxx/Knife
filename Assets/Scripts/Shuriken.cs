@@ -8,6 +8,7 @@ public class Shuriken : MonoBehaviour {
 
 	public RoundManager roundManager;
     public PeakNShoot peakNShoot;
+	public PowerUpSpawner powerUpSpawner;
     public GameObject bloodSplatter;
 
 	public const float peakOffset = 2.3f;
@@ -40,6 +41,7 @@ public class Shuriken : MonoBehaviour {
 	void Start () {
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
         peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		powerUpSpawner = GameObject.Find("PowerUpSpawner").GetComponent<PowerUpSpawner>();
         bloodSplatter = GameObject.Find("BloodSplatterPivot");
 
 		player = GameObject.Find("FingerTarget");
@@ -74,7 +76,7 @@ public class Shuriken : MonoBehaviour {
     {
         if (currentState == starState.Shoot)
         {
-            currentState = starState.Reset;         
+            currentState = starState.Reset;
         }
     }   
 
@@ -85,13 +87,14 @@ public class Shuriken : MonoBehaviour {
             case Shuriken.starState.Initiation:
                 peakTimer = 0;
                 shootTimer = 0;
-				TapticManager.Impact(ImpactFeedback.Light);
+				TapticManager.Impact(ImpactFeedback.Heavy);
                 currentState = Shuriken.starState.SetLocation;
                 break;
             case Shuriken.starState.SetLocation:
                 SetPosition();
                 //currentState = Shuriken.starState.Wait;
                 //nextState = Shuriken.starState.Peak;
+				TapticManager.Impact(ImpactFeedback.Light);
 				currentState = Shuriken.starState.Peak;
                 breathingTime = peakTimer;
                 break;

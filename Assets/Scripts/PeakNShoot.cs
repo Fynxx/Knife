@@ -66,7 +66,7 @@ public class PeakNShoot : MonoBehaviour {
             Shuriken obj = Instantiate(starPrefab).GetComponent<Shuriken>();
             obj.gameObject.SetActive(false);
             stars.Add(obj);
-			Initiation(stars[0]); 
+			Initiation(stars[0]);
         }
 	}
 
@@ -75,13 +75,6 @@ public class PeakNShoot : MonoBehaviour {
         {
             stars[i].gameObject.SetActive(false);
 			stars[i].gameObject.transform.position = new Vector3(0, 7, 0);
-        }
-	}
-
-	public void MoveStars(){
-		for (int i = 0; i < pooledAmount; i++)
-        {
-			
         }
 	}
 
@@ -115,13 +108,17 @@ public class PeakNShoot : MonoBehaviour {
 	public void AddToScore(int amount)
     {
         roundManager.score = roundManager.score + amount;
-		starMultiplier++;
-		powerUpSpawner.coolDown--;
-		if (starMultiplier == 10 * starsInGame)
-        {
-			Initiation();
-			starMultiplier = 0;
-			starsInGame++;
-		}
+		AddStar();
     }
+
+	public void AddStar(){
+		starMultiplier++;
+        powerUpSpawner.coolDown--;
+        if (starMultiplier == 10 * starsInGame)
+        {
+            Initiation();
+            starMultiplier = 0;
+            starsInGame++;
+        }
+	}
 }

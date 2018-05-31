@@ -1,0 +1,14 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Collectable : MonoBehaviour {
+
+	public void LifeTime(float life){
+		life -= Time.deltaTime;
+	}
+
+	public void Die(GameObject item){
+		item.SetActive(false);
+	}
+}

@@ -6,11 +6,11 @@ using DG.Tweening;
 
 public class PowerUp : MonoBehaviour {
 
-    public const float lifeValue = 10f;
-    public const float pickupTimerValue = 1f;
+    public const float lifeValue = 3f;
+    public const float pickupTimerValue = .75f;
     //public const float 
 
-	public enum state { OnField, PickingUp, PickedUp, Unavailable };
+	public enum state { Idle, OnField, PickedUp, Reset };
 	public state currentState;
 
 	public PowerUp currentPowerup;
@@ -24,16 +24,18 @@ public class PowerUp : MonoBehaviour {
     public float powerUpLife;
 
     public GameObject playerSprite;
-	public GameObject GOshield;
+	//public GameObject GOshield;
+       
+	public bool isPickingUp;
 
     private void Awake()
     {
         player = GameObject.Find("FingerTarget").GetComponent<Player>();
         playerSprite = GameObject.Find("FingerSprite");
-        GOshield = GameObject.Find("Shield");
+		//GOshield = GameObject.Find("Shield");
         roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		shield = GameObject.Find("ShieldPickUp").GetComponent<Shield>();
-        powerUpLife = lifeValue;
+        powerUpLife = lifeValue;      
     }
 
 	void Start () {
@@ -41,7 +43,8 @@ public class PowerUp : MonoBehaviour {
         pickupTimer = pickupTimerValue;
         oneTenthHeight = Screen.height / 10;
         oneSixthWidth = Screen.width / 6;
-		currentState = state.Unavailable;
+		currentState = state.Idle;
+		currentPowerup = shield;
         //topRight = new Vector3(Screen.width - oneSixthWidth, Screen.height - oneTenthHeight, 10);
         //topLeft = new Vector3(Screen.width - oneSixthWidth * 5, Screen.height - oneTenthHeight, 10);
         //bottomRight = new Vector3(Screen.width - oneSixthWidth, Screen.height - oneTenthHeight * 9, 10);
@@ -51,11 +54,15 @@ public class PowerUp : MonoBehaviour {
 
 	void OnTriggerStay2D(Collider2D other)
     {
-		if (other.tag == "Player" && currentState == state.OnField)
+		print(isPickingUp);
+		if (other.tag == "Player")
         {
-			currentState = state.PickingUp;
+			isPickingUp = true;
+			//print("picking up");
 		} else {
-			currentState = state.Unavailable;
+			//print("powerup reset");
+			isPickingUp = false;
+			currentState = state.Reset;
 		}
     }
 	
@@ -63,21 +70,31 @@ public class PowerUp : MonoBehaviour {
 		print(currentState);
 		switch (currentState)
 		{
+			case state.Idle:
+			    //PickUpPowerUp(shield);
+
+                break;
 			case state.OnField:
-				Shield();
-				LifeTime();
+				//PickUpPowerUp(shield);
+				//LifeTime();
+				//print(isPickingUp);
+				//if (isPickingUp){
+					
+				//	pickupTimer -= Time.deltaTime;
+    //                if (pickupTimer < 0)
+    //                {
+    //                    currentState = state.PickedUp;
+    //                }
+				//}
 
 				break;
-			case state.PickingUp:
-				    pickupTimer--;
-                break;
 			case state.PickedUp:
-    				currentPowerup.transform.position = playerSprite.transform.position;
-    				currentPowerup.transform.parent = playerSprite.transform;
+
 				break;
-			case state.Unavailable:
-    				currentPowerup.transform.parent = null;
-                    currentPowerup.transform.position = new Vector3(100, 0, 0);
+			case state.Reset:
+				//GOshield.transform.parent = null;
+				//GOshield.transform.position = new Vector3(100, 0, 0);
+			    //currentState = state.Idle;
                 break;
 			default:
 				break;
@@ -88,15 +105,15 @@ public class PowerUp : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
 	{
-        pickupTimer = pickupTimerValue;
+        //pickupTimer = pickupTimerValue;
 	}
 
-    void LifeTime()
+    public void LifeTime()
     {
         powerUpLife -= Time.deltaTime;
         if (powerUpLife < 0)
         {
-			currentState = state.PickedUp;
+			currentState = state.Reset;
             powerUpLife = lifeValue;
         }
 		if (currentState != state.OnField)
@@ -107,7 +124,7 @@ public class PowerUp : MonoBehaviour {
 
 	public void PickUpPowerUp(PowerUp power)
     {
-
+		currentPowerup = power;
     }
 
 	public void Shield(){
