@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Advertisements;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -13,6 +14,7 @@ public class RoundManager : MonoBehaviour {
 
 	public round currentRound;
     public StateManager stateManager;
+	public Player player;
 	//public enum danger {None, Knife, Shuriken, Grater};
 	//public danger currentDanger;
 
@@ -21,7 +23,7 @@ public class RoundManager : MonoBehaviour {
 	public int score;
 	public int highscore;
     public int lives;
-	public int hitPoints;
+	//public int hitPoints;
 
 	public Text scoreLabel;
 	public bool isDead;
@@ -43,6 +45,7 @@ public class RoundManager : MonoBehaviour {
         currentRound = round.Fresh;
 		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
 		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		player = GameObject.Find("FingerTarget").GetComponent<Player>();
 		//_nextDangerShot = _nextDangerResetValue;
 		Load ();
         isPlaying = false;
@@ -121,6 +124,10 @@ public class RoundManager : MonoBehaviour {
 				}
 			}
 		}
+
+		if (Input.touchCount > 1){
+			currentRound = round.Ended;
+		}
 	}
 
 	public void Rounds(){ 
@@ -137,7 +144,7 @@ public class RoundManager : MonoBehaviour {
 				peakNShoot.starMultiplier = 0;
     			//_nextDangerTimer = 0;
     			//_nextDangerShot = _nextDangerResetValue;
-				hitPoints = 1;
+				player.hitPoints = 1;
 				peakNShoot.CreateStars();
     			//currentDanger = danger.None;
     			currentRound = round.Playing;
@@ -157,6 +164,7 @@ public class RoundManager : MonoBehaviour {
     				highscore = score;
     				Save ();
     			}
+				Advertisement.Show();
 			break;
 		case round.Settings:
 			break;

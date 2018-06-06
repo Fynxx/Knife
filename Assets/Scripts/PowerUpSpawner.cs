@@ -115,7 +115,6 @@ public class PowerUpSpawner : MonoBehaviour {
 		nextPowerUpPosition = Camera.main.ScreenToWorldPoint(nextPowerUpPosition);
 		//powerUp.isAlive = true;
 		powerUp.transform.position = nextPowerUpPosition;
-		powerUp.currentState = PowerUp.state.OnField;
 		//powerUp.transform.position = nextPowerUpPosition;
 		//Instantiate(powerUp, nextPowerUpPosition, Quaternion.identity);
 	}

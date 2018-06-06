@@ -113,7 +113,7 @@ public class PeakNShoot : MonoBehaviour {
 
 	public void AddStar(){
 		starMultiplier++;
-        powerUpSpawner.coolDown--;
+        //powerUpSpawner.coolDown--;
         if (starMultiplier == 10 * starsInGame)
         {
             Initiation();

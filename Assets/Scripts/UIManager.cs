@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     public Image dangerSouth;
     public Image dangerWest;
 
+	public Slider multiplierBar;
+
     public string[] lowerMessages;
     public CanvasGroup fresh;
     public CanvasGroup playing;
@@ -34,6 +36,7 @@ public class UIManager : MonoBehaviour
     public StateManager stateManager;
     public ShurikenSpawner spawner;
 	public PeakNShoot peakNShoot;
+	public Multiplier multiplier;
 
     public GameObject player;
     public GameObject raycastBlockerAd;
@@ -45,7 +48,7 @@ public class UIManager : MonoBehaviour
         scoreLabelEnded = GameObject.Find("ScoreLabelEnded").GetComponent<Text>();
         highScoreLabelFresh = GameObject.Find("HighScoreLabelFresh").GetComponent<Text>();
         highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
-        lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
+		lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
 
         dangerNorth = GameObject.Find("DangerNorth").GetComponent<Image>();
         dangerEast = GameObject.Find("DangerEast").GetComponent<Image>();
@@ -70,6 +73,7 @@ public class UIManager : MonoBehaviour
         stateManager = GameObject.Find("GameManager").GetComponent<StateManager>();
         spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
 		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 
         player = GameObject.Find("FingerTarget");
 

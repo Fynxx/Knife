@@ -1,84 +1,64 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Shield : PowerUp
 {
-	public GameObject GOshield;
+	public GameObject shield;
+	public GameObject GOShield;
+
+	public Image shieldPickupBar;
     
 	void Start()
 	{
-        GOshield = GameObject.Find("Shield");
+		shield = this.gameObject;
+		shieldPickupBar = GameObject.Find("ShieldPickupBar").GetComponent<Image>();
+		GOShield = GameObject.Find("Shield");
+		//shield = GameObject.Find("Shield");
+		//pickupTimer = 1.25f;
+
 	}
+
+	void OnEnable()
+    {
+        lifeTime = 4;
+		pickupTimer = 1;
+    }
        
 	void Update()
 	{
-		switch (currentState)
+		shieldPickupBar.fillAmount = pickupTimer;
+		//print(spawner.currentState);
+		if (roundManager.currentRound == round.Playing)
         {
-			case state.Idle:
-				PickUpPowerUp(shield);
-				pickupTimer = pickupTimerValue;
-				break;
-            case state.OnField:
-				LifeTime();          
-                if (isPickingUp)
-                {
-                    pickupTimer -= Time.deltaTime;
-                    if (pickupTimer <= 0)
-                    {
-						roundManager.hitPoints = 2;
-                        currentState = state.PickedUp;
-						//print("picking up done");
-                    }
-                }
-                break;
-            case state.PickedUp:
-				//print("picked up");
-			    
-                transform.position = new Vector3(100, 0, 0);
-				GOshield.transform.position = playerSprite.transform.position;
-                GOshield.transform.parent = playerSprite.transform;
+            if (lifeTime > 0)
+            {
+				lifeTime -= Time.deltaTime;
 
-				if (roundManager.hitPoints == 1)
-                {
-                    //GOshield.transform.parent = null;
-                    //GOshield.transform.position = new Vector3(100, 0, 0);
-                    currentState = state.Reset;
-                }
-                break;
-			case state.Reset:
-                GOshield.transform.parent = null;
-                GOshield.transform.position = new Vector3(100, 0, 0);
-                currentState = state.Idle;
-                break;
-            default:
-                print("Shield current state is default, this should not happen.");
-                break;
-        } 
-
+            }
+            else if (lifeTime < 0)
+            {
+				Die(shield);
+            }
+        }
 	}
-
-	void OnField()
-	{
-
-	}
-
-	void PickingUp()
-	{
-
-	}
-
-	void PickedUp()
+   
+    void OnTriggerStay2D(Collider2D other)
     {
+        if (other.tag == "Player")
+        {
+			pickupTimer -= (Time.deltaTime * .75f) * Input.GetTouch(0).pressure;
+			//print(pickupTimer);   
+
+			if (pickupTimer < 0 )//|| Input.GetTouch(0).pressure > 5
+            {
+				spawner.isAlive = false;
+				player.hitPoints = 2;
+				player.powerupIndicator = GOShield.transform;
+				Die(shield);
+            }
+        }
 
     }
-
-	void Unavailable()
-    {
-
-    }
-
-	void Drop(){
-		
-	}
 }

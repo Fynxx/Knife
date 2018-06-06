@@ -30,13 +30,17 @@ public class Shuriken : MonoBehaviour {
 	public float breathingTime;
 	public float peakSpeed;
 	public float shootSpeed;
+	public float endlocation;
+	public float peakTime;
 
 	public Vector3 starPosition;
     public Vector3 spawnLocation;
     public Vector3 peakLocation;  
 	public Vector3 shootDirection;
-
-
+	public Vector3 peakDirection;
+	public Vector3 shootLocation;
+	public Vector3 playerLocation;
+   
 	// Use this for initialization
 	void Start () {
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
@@ -53,7 +57,7 @@ public class Shuriken : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		Spin ();
-
+		print(currentState);
 		if (roundManager.currentRound == round.Playing)
         {
             starPosition = transform.position;
@@ -116,8 +120,8 @@ public class Shuriken : MonoBehaviour {
                 break;
             case Shuriken.starState.Reset:
 				peakNShoot.AddToScore(1);
-                peakTimer = peakTimer - 0.02f;
-                shootTimer = shootTimer - 0.04f;
+                //peakTimer = peakTimer - 0.02f;
+                //shootTimer = shootTimer - 0.04f;
                 currentState = Shuriken.starState.SetLocation;
                 break;
             default:
@@ -128,25 +132,32 @@ public class Shuriken : MonoBehaviour {
 	void SetPosition()
     {
         nextDirection = (direction)Random.Range(0, 4);
-		float spawnMargin = Random.Range(-1.5f, 1.5f);
+		//float spawnMargin = Random.Range(-1f, 1f);
+	    peakTime = 1f;
+		peakSpeed = 2f;
+		playerLocation = player.transform.position;
 
 		switch (nextDirection)
         {
             case direction.North:
-				spawnLocation = new Vector3((player.transform.position.x + spawnMargin), 7, 0);
+				spawnLocation = new Vector3(Random.Range(-1.5f, 1.5f), 7, 0);//new Vector3((player.transform.position.x + spawnMargin), 7, 0);
                 peakLocation = new Vector3(spawnLocation.x, (spawnLocation.y - peakOffset), spawnLocation.z);
+				endlocation = peakLocation.y;
                 break;
             case direction.East:
-				spawnLocation = new Vector3(4.5f, (player.transform.position.y + spawnMargin), 0);
+				spawnLocation = new Vector3(4.5f, Random.Range(-3.5f, 3.5f), 0);//new Vector3(4.5f, (player.transform.position.y + spawnMargin), 0);
                 peakLocation = new Vector3((spawnLocation.x - peakOffset), spawnLocation.y, spawnLocation.z);
+				endlocation = peakLocation.x;
                 break;
             case direction.South:
-				spawnLocation = new Vector3((player.transform.position.x + spawnMargin), -7, 0);
+				spawnLocation = new Vector3(Random.Range(-1.5f, 1.5f), -7, 0);//new Vector3((player.transform.position.x + spawnMargin), -7, 0);
                 peakLocation = new Vector3(spawnLocation.x, (spawnLocation.y + peakOffset), spawnLocation.z);
+				endlocation = peakLocation.y;
                 break;
             case direction.West:
-				spawnLocation = new Vector3(-4.5f, (player.transform.position.y + spawnMargin), 0);
+				spawnLocation = new Vector3(-4.5f, Random.Range(-3.5f, 3.5f), 0);//new Vector3(-4.5f, (player.transform.position.y + spawnMargin), 0);
                 peakLocation = new Vector3((spawnLocation.x + peakOffset), spawnLocation.y, spawnLocation.z);
+				endlocation = peakLocation.x;
                 break;
             default:
                 break;
@@ -156,22 +167,31 @@ public class Shuriken : MonoBehaviour {
 
 	void Peak()
     {
-        peakSpeed = 2f;
-        float peakTime = .15f;
-        //float distCovered = (Time.time - startTime) * peakSpeed;
-        //float fracJourney = distCovered / journeyLength;
-        //Vector3 temp = Vector3.Lerp(spawnLocation, peakLocation, peakSpeed);
-        //star.transform.position = temp;
-		transform.DOKill(false);
-        transform.DOMove(peakLocation, peakTime);
-        transform.DORotate(new Vector3(0, 0, -1), peakTime);
-        shootDirection = (peakLocation - spawnLocation).normalized;      
+		peakDirection = (peakLocation - spawnLocation).normalized;
+		//shootDirection = (playerLocation - peakLocation).normalized;
+		//peakSpeed = (peakSpeed / 2);
+
+		//transform.DOKill(false);
+		//transform.DOMove(peakLocation, peakTime);
+		//transform.DORotate(new Vector3(0, 0, -1), peakTime);
+
+		transform.Translate(peakDirection * Time.deltaTime * peakSpeed, Space.World);
+        
+		//transform.position = spawnLocation + new Vector3(Mathf.Sin(Time.time), 0, 0);
+
+
+		peakTime -= Time.deltaTime;
+		if (peakTime <= 0){
+			breathingTime = .5f;
+			currentState = starState.Wait;
+			nextState = starState.Shoot;
+		}
     }
 
 	void Shoot()
     {
         shootSpeed = 20f;
-        transform.Translate(shootDirection * (Time.deltaTime * shootSpeed), Space.World);
+		transform.Translate(peakDirection * (Time.deltaTime * shootSpeed), Space.World);
     }
 
 	void Wait()
