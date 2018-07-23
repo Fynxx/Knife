@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
         roundManager = GetComponent<RoundManager>();
         stateManager = GameObject.Find("GameManager").GetComponent<StateManager>();
         //spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
-		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 
         player = GameObject.Find("FingerTarget");

@@ -55,7 +55,7 @@ public class PeakNShoot : MonoBehaviour {
 		if (roundManager.currentRound == round.Playing)
 		{
 			starPosition = star.transform.position;
-			PeakAndShoot();
+			//PeakAndShoot();
 		}
 		//print(currentState);
 	}
@@ -76,6 +76,13 @@ public class PeakNShoot : MonoBehaviour {
             stars[i].gameObject.SetActive(false);
 			stars[i].gameObject.transform.position = new Vector3(0, 7, 0);
         }
+	}
+
+	public void DeleteStars(){
+		for (int i = 0; i < pooledAmount; i++)
+		{
+			Destroy(stars[i].gameObject);
+		}
 	}
 
 	public void Initiation(){

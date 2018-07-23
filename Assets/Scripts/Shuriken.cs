@@ -7,7 +7,7 @@ using TapticPlugin;
 public class Shuriken : MonoBehaviour {
 
 	public RoundManager roundManager;
-    public PeakNShoot peakNShoot;
+    //public PeakNShoot peakNShoot;
 	public PowerUpSpawner powerUpSpawner;
     public GameObject bloodSplatter;
 
@@ -45,7 +45,7 @@ public class Shuriken : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
-        peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+        //peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		powerUpSpawner = GameObject.Find("PowerUpSpawner").GetComponent<PowerUpSpawner>();
         bloodSplatter = GameObject.Find("BloodSplatterPivot");
 
@@ -63,7 +63,7 @@ public class Shuriken : MonoBehaviour {
 		if (roundManager.currentRound == round.Playing)
         {
             starPosition = transform.position;
-            PeakAndShoot();
+            //PeakAndShoot();
         }
 	}
 
