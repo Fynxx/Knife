@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Shield : PowerUp
 {
+	public Multiplier multiplier;
 	public GameObject shield;
 	public GameObject GOShield;
-
+    
 	public Image shieldPickupBar;
     
 	void Start()
 	{
-		shield = this.gameObject;
+		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
+        shield = this.gameObject;
 		shieldPickupBar = GameObject.Find("ShieldPickupBar").GetComponent<Image>();
 		GOShield = GameObject.Find("Shield");
 		//shield = GameObject.Find("Shield");
@@ -39,6 +42,7 @@ public class Shield : PowerUp
             }
             else if (lifeTime < 0)
             {
+				spawner.isAlive = false;
 				Die(shield);
             }
         }
@@ -49,13 +53,15 @@ public class Shield : PowerUp
         if (other.tag == "Player")
         {
 			pickupTimer -= (Time.deltaTime * .75f) * Input.GetTouch(0).pressure;
-			//print(pickupTimer);   
+			//print("picking up");   
 
 			if (pickupTimer < 0 )//|| Input.GetTouch(0).pressure > 5
             {
 				spawner.isAlive = false;
 				player.hitPoints = 2;
 				player.powerupIndicator = GOShield.transform;
+				//spawner.isAllowedToSpawn = true;
+				multiplier.coins -= 8;
 				Die(shield);
             }
         }

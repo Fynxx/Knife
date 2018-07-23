@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public Text scoreLabelEnded;
     public Text highScoreLabelFresh;
     public Text highScoreLabelEnded;
+	public Text highScoreLabelMenu;
     public Text lowerLabel;
 
     public Image dangerNorth;
@@ -34,7 +35,7 @@ public class UIManager : MonoBehaviour
 
     public RoundManager roundManager;
     public StateManager stateManager;
-    public ShurikenSpawner spawner;
+    //public ShurikenSpawner spawner;
 	public PeakNShoot peakNShoot;
 	public Multiplier multiplier;
 
@@ -44,16 +45,17 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         scoreLabelPlayLeft = GameObject.Find("ScoreLabelPlayLeft").GetComponent<Text>();
-        scoreLabelPlayRight = GameObject.Find("ScoreLabelPlayRight").GetComponent<Text>();
+        //scoreLabelPlayRight = GameObject.Find("ScoreLabelPlayRight").GetComponent<Text>();
         scoreLabelEnded = GameObject.Find("ScoreLabelEnded").GetComponent<Text>();
         highScoreLabelFresh = GameObject.Find("HighScoreLabelFresh").GetComponent<Text>();
         highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
-		lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
+		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
+		//lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
 
-        dangerNorth = GameObject.Find("DangerNorth").GetComponent<Image>();
-        dangerEast = GameObject.Find("DangerEast").GetComponent<Image>();
-        dangerSouth = GameObject.Find("DangerSouth").GetComponent<Image>();
-        dangerWest = GameObject.Find("DangerWest").GetComponent<Image>();
+        //dangerNorth = GameObject.Find("DangerNorth").GetComponent<Image>();
+        //dangerEast = GameObject.Find("DangerEast").GetComponent<Image>();
+        //dangerSouth = GameObject.Find("DangerSouth").GetComponent<Image>();
+        //dangerWest = GameObject.Find("DangerWest").GetComponent<Image>();
 
         fresh = GameObject.Find("RoundFresh").GetComponent<CanvasGroup>();
         playing = GameObject.Find("RoundPlaying").GetComponent<CanvasGroup>();
@@ -71,7 +73,7 @@ public class UIManager : MonoBehaviour
 
         roundManager = GetComponent<RoundManager>();
         stateManager = GameObject.Find("GameManager").GetComponent<StateManager>();
-        spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
+        //spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
 		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 
@@ -87,14 +89,15 @@ public class UIManager : MonoBehaviour
     {
         CanvasSwitcher();
         CanvasGroupChanger();
-        DangerIndicator();
-        ScoreUiFlipper();
+        //DangerIndicator();
+        //ScoreUiFlipper();
         //		testText.text = roundManager.currentDanger.ToString ();
-        scoreLabelPlayLeft.text = roundManager.score.ToString();//C# tostring formatting
-        scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
-        scoreLabelEnded.text = roundManager.score.ToString();//C# tostring formatting
-        highScoreLabelFresh.text = roundManager.highscore.ToString();
-        highScoreLabelEnded.text = roundManager.highscore.ToString();
+        scoreLabelPlayLeft.text = roundManager.score.ToString("D3");//C# tostring formatting
+        //scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
+        scoreLabelEnded.text = roundManager.score.ToString("D3");//C# tostring formatting
+        highScoreLabelFresh.text = roundManager.highscore.ToString("D3");
+        highScoreLabelEnded.text = roundManager.highscore.ToString("D3");
+		highScoreLabelMenu.text = roundManager.highscore.ToString("D3");
     }
 
     void CanvasGroupChanger()
@@ -110,8 +113,20 @@ public class UIManager : MonoBehaviour
                 hold.alpha = 0;
                 //settings.alpha = 0;
                 raycastBlockerAd.SetActive(false);
-                player.SetActive(false);
+				player.SetActive(true);
+				player.transform.position = Camera.main.ViewportToWorldPoint(new Vector3(.5f, .5f, .5f));
                 break;
+			case round.Holding:
+				lowerLabel.text = lowerMessages[0];
+
+                fresh.alpha = 0;
+                playing.alpha = 0;
+                ended.alpha = 1;
+                hold.alpha = 0;
+                //settings.alpha = 0;
+                raycastBlockerAd.SetActive(false);
+                player.SetActive(true);
+				break;
             case round.Playing:
                 lowerLabel.text = lowerMessages[1];
 
@@ -144,6 +159,7 @@ public class UIManager : MonoBehaviour
                 hold.alpha = 0;
                 //settings.alpha = 1;
                 raycastBlockerAd.SetActive(true);
+				player.SetActive(false);
                 break;
             case round.Hold:
                 lowerLabel.text = null;
@@ -154,6 +170,7 @@ public class UIManager : MonoBehaviour
                 hold.alpha = 1;
                 //settings.alpha = 1;
                 raycastBlockerAd.SetActive(false);
+				player.SetActive(false);
                 break;
             default:
                 break;
@@ -184,41 +201,41 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void DangerIndicator()
-    {
-        if (roundManager.currentRound == round.Playing)
-        {
-			switch (peakNShoot.nextDirection)
-            {
-				case PeakNShoot.direction.North:
-                    dangerNorth.enabled = true;
-                    dangerEast.enabled = false;
-                    dangerSouth.enabled = false;
-                    dangerWest.enabled = false;
-                    break;
-				case PeakNShoot.direction.East:
-                    dangerNorth.enabled = false;
-                    dangerEast.enabled = true;
-                    dangerSouth.enabled = false;
-                    dangerWest.enabled = false;
-                    break;
-				case PeakNShoot.direction.South:
-                    dangerNorth.enabled = false;
-                    dangerEast.enabled = false;
-                    dangerSouth.enabled = true;
-                    dangerWest.enabled = false;
-                    break;
-				case PeakNShoot.direction.West:
-                    dangerNorth.enabled = false;
-                    dangerEast.enabled = false;
-                    dangerSouth.enabled = false;
-                    dangerWest.enabled = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+   // void DangerIndicator()
+   // {
+   //     if (roundManager.currentRound == round.Playing)
+   //     {
+			//switch (peakNShoot.nextDirection)
+    //        {
+				//case PeakNShoot.direction.North:
+    //                dangerNorth.enabled = true;
+    //                dangerEast.enabled = false;
+    //                dangerSouth.enabled = false;
+    //                dangerWest.enabled = false;
+    //                break;
+				//case PeakNShoot.direction.East:
+    //                dangerNorth.enabled = false;
+    //                dangerEast.enabled = true;
+    //                dangerSouth.enabled = false;
+    //                dangerWest.enabled = false;
+    //                break;
+				//case PeakNShoot.direction.South:
+    //                dangerNorth.enabled = false;
+    //                dangerEast.enabled = false;
+    //                dangerSouth.enabled = true;
+    //                dangerWest.enabled = false;
+    //                break;
+				//case PeakNShoot.direction.West:
+    //                dangerNorth.enabled = false;
+    //                dangerEast.enabled = false;
+    //                dangerSouth.enabled = false;
+    //                dangerWest.enabled = true;
+    //                break;
+    //            default:
+    //                break;
+    //        }
+    //    }
+    //}
 
     public void ScoreUiFlipper()
     {

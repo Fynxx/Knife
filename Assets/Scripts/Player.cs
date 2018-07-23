@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
 	public RoundManager roundManager;
 	public GameObject bloodSplatter;
 	public Transform powerupIndicator;
+	public Transform noPowerup;
     public Vector3 start;
     public Vector3 end;
     public float speed;
@@ -24,6 +25,8 @@ public class Player : MonoBehaviour {
 		bloodSplatter = GameObject.Find("BloodSplatterPivot");
 		spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
 		fingerSprite = GameObject.Find("FingerSprite");
+		noPowerup = GameObject.Find("NoPowerUp").GetComponent<Transform>();
+		powerupIndicator = noPowerup;
 	}
 
 	void Update () {
@@ -31,14 +34,21 @@ public class Player : MonoBehaviour {
         speed = 1;
 
 		if (hitPoints == 1){
-			spawner.isAllowedToSpawn = true; 
-			powerupIndicator.parent = null;
+			spawner.isAllowedToSpawn = true;          
             powerupIndicator.position = new Vector3(100, 0, 0);
+			if (powerupIndicator.parent != null){
+				//spawner.isAllowedToSpawn = false;
+				powerupIndicator.parent = null;
+			}
 		}
 		else {
 			spawner.isAllowedToSpawn = false;
 			powerupIndicator.position = fingerSprite.transform.position;
             powerupIndicator.parent = fingerSprite.transform;
+		}
+
+		if (powerupIndicator == null){
+			powerupIndicator = noPowerup;
 		}
 
 		//if (powerupIndicator != null){
@@ -51,7 +61,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void FingerTarget(){
-		if (Input.touchCount > 0 && roundManager.currentRound == round.Playing) {
+		if (Input.touchCount > 0 && (roundManager.currentRound == round.Playing || roundManager.currentRound == round.Holding)) {
             //transform.position = Camera.main.ScreenToWorldPoint (Input.GetTouch (0).position);
             start = transform.position;
             end = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);

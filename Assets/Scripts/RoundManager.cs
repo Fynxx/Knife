@@ -8,28 +8,33 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using TapticPlugin;
 
-public enum round {Fresh, Playing, Reset, Ended, Killed, Settings, Hold};
+public enum round {Fresh, Holding, Playing, Reset, Ended, Killed, Settings, Hold};
 
 public class RoundManager : MonoBehaviour {
 
 	public round currentRound;
     public StateManager stateManager;
 	public Player player;
+	public Multiplier multiplier;
 	//public enum danger {None, Knife, Shuriken, Grater};
 	//public danger currentDanger;
 
 	public float time;
+	public float resetTimer;
+	public float holdTimer;
 
 	public int score;
 	public int highscore;
     public int lives;
+	public int adMultiplier;
 	//public int hitPoints;
 
 	public Text scoreLabel;
 	public bool isDead;
 	public bool inSettings;
     public bool inGame;
-    public bool isPlaying;
+	public bool heldForLongEnough;
+	public bool fillHoldTimer;
     
 	//public ShurikenSpawner dangerSpawner;
 	public PeakNShoot peakNShoot;
@@ -46,9 +51,10 @@ public class RoundManager : MonoBehaviour {
 		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
 		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
+		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 		//_nextDangerShot = _nextDangerResetValue;
 		Load ();
-        isPlaying = false;
+		adMultiplier = 5;
 	}
 	
 	void Update () {
@@ -56,7 +62,7 @@ public class RoundManager : MonoBehaviour {
         Rounds();
 		//		DangerSwitcher ();
 		//print(currentRound);
-		//print(Input.GetTouch(0).pressure);
+		//print();
 	}
 
 	public void ChangeRound(){
@@ -82,51 +88,59 @@ public class RoundManager : MonoBehaviour {
 							break;
 						case TouchPhase.Moved:
 						case TouchPhase.Stationary:
-    							if (isDead == false) {
-    								currentRound = round.Playing;
-                                    isPlaying = true;
+								if (currentRound == round.Holding)
+								{
+									holdTimer -= (Time.deltaTime);
+                                    if (holdTimer <= 0f)
+                                    {
+                                        heldForLongEnough = true;
+                                        currentRound = round.Playing;
+                                    }
+								}
+
+								if (isDead == false ) {
+									if (heldForLongEnough == true)
+									{
+										currentRound = round.Playing;
+									} else {
+										currentRound = round.Holding;
+									}
     							} else {
     								currentRound = round.Killed;
     							}
 							break;
 						case TouchPhase.Ended:
-                                if (isPlaying == true)
+								if (currentRound == round.Playing)//|| currentRound == round.Holding
                                 {
-									if (score < 1 && !isDead)
+									if (score == 0 && !isDead)
 									{
-										currentRound = round.Hold;
+										currentRound = round.Holding;
 										TapticManager.Notification(NotificationFeedback.Warning);
 									}
 									else
 									{
 										currentRound = round.Ended;
-										isPlaying = false;
 										if (!isDead)
 										{
 											TapticManager.Notification(NotificationFeedback.Error);
 										}
                                     }
                                 }
+								if (currentRound == round.Holding){
+									fillHoldTimer = true;
+								}
 							break;
 						default:
 							    currentRound = round.Fresh;
 							break;
 						}
-                    } else {
-                        if (Physics.Raycast(ray, out hit))
-                        {
-                            if (hit.transform.tag == "Background")
-                            {
-                                
-                            }
-                        }
-                    }
+                    } 
 				}
 			}
 		}
 
 		if (Input.touchCount > 1){
-			currentRound = round.Ended;
+			currentRound = round.Reset;
 		}
 	}
 
@@ -138,7 +152,7 @@ public class RoundManager : MonoBehaviour {
 		case round.Reset:
 				//peakNShoot.Initiation();
 				//dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
-				peakNShoot.EmptyStars();
+				peakNShoot.EmptyStars();            
     			score = 0;
 				peakNShoot.starsInGame = 1;
 				peakNShoot.starMultiplier = 0;
@@ -146,8 +160,25 @@ public class RoundManager : MonoBehaviour {
     			//_nextDangerShot = _nextDangerResetValue;
 				player.hitPoints = 1;
 				peakNShoot.CreateStars();
+				multiplier.countDown = 0;
+				multiplier.coins = 0;
+				adMultiplier--;
+				resetTimer = 10f;
+				holdTimer = 1f;
+				heldForLongEnough = false;
+				fillHoldTimer = false;
     			//currentDanger = danger.None;
-    			currentRound = round.Playing;
+				currentRound = round.Holding;
+			break;
+		case round.Holding:
+				if (fillHoldTimer)
+				{
+					holdTimer += (Time.deltaTime * 2);
+					if (holdTimer >= 1f)
+					{
+						holdTimer = 1;
+					}
+				}
 			break;
 		case round.Playing:
                 time = 0;
@@ -164,7 +195,16 @@ public class RoundManager : MonoBehaviour {
     				highscore = score;
     				Save ();
     			}
-				Advertisement.Show();
+				if (adMultiplier <= 0){
+					Advertisement.Show();
+					adMultiplier = 5;
+					currentRound = round.Fresh;
+				}
+				//resetTimer -= Time.deltaTime;
+				//if (resetTimer <= 0){
+				//	currentRound = round.Fresh;
+				//	stateManager.currentState = state.Menu;
+				//}
 			break;
 		case round.Settings:
 			break;

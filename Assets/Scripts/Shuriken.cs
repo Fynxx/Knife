@@ -11,7 +11,7 @@ public class Shuriken : MonoBehaviour {
 	public PowerUpSpawner powerUpSpawner;
     public GameObject bloodSplatter;
 
-	public const float peakOffset = 2.3f;
+	public const float peakOffset = 1f;
 
 	public enum direction { North, East, South, West }
 	public direction nextDirection;
@@ -24,6 +24,7 @@ public class Shuriken : MonoBehaviour {
 	public starState nextState;
 
 	public GameObject player;
+	public GameObject shurikenIndicator;
 
 	public float peakTimer;
 	public float shootTimer;
@@ -49,6 +50,7 @@ public class Shuriken : MonoBehaviour {
         bloodSplatter = GameObject.Find("BloodSplatterPivot");
 
 		player = GameObject.Find("FingerTarget");
+		shurikenIndicator = GameObject.Find("ShurikenIndicator");
 		sprenderer = GetComponent<SpriteRenderer> ();
 		currentState = starState.Initiation;
 //		roundManager = GameObject.Find ("GameManager").GetComponent<RoundManager> ();
@@ -57,7 +59,7 @@ public class Shuriken : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		Spin ();
-		print(currentState);
+		//print(currentState);
 		if (roundManager.currentRound == round.Playing)
         {
             starPosition = transform.position;
@@ -91,14 +93,14 @@ public class Shuriken : MonoBehaviour {
             case Shuriken.starState.Initiation:
                 peakTimer = 0;
                 shootTimer = 0;
-				TapticManager.Impact(ImpactFeedback.Heavy);
+				//TapticManager.Impact(ImpactFeedback.Heavy);
                 currentState = Shuriken.starState.SetLocation;
                 break;
             case Shuriken.starState.SetLocation:
                 SetPosition();
                 //currentState = Shuriken.starState.Wait;
                 //nextState = Shuriken.starState.Peak;
-				TapticManager.Impact(ImpactFeedback.Light);
+				//TapticManager.Impact(ImpactFeedback.Light);
 				currentState = Shuriken.starState.Peak;
                 breathingTime = peakTimer;
                 break;
@@ -119,7 +121,7 @@ public class Shuriken : MonoBehaviour {
                 Wait();
                 break;
             case Shuriken.starState.Reset:
-				peakNShoot.AddToScore(1);
+				//peakNShoot.AddToScore(1);
                 //peakTimer = peakTimer - 0.02f;
                 //shootTimer = shootTimer - 0.04f;
                 currentState = Shuriken.starState.SetLocation;
@@ -133,6 +135,7 @@ public class Shuriken : MonoBehaviour {
     {
         nextDirection = (direction)Random.Range(0, 4);
 		//float spawnMargin = Random.Range(-1f, 1f);
+		float randomSpawn = Random.Range(0f, 1f);
 	    peakTime = 1f;
 		peakSpeed = 2f;
 		playerLocation = player.transform.position;
@@ -140,22 +143,22 @@ public class Shuriken : MonoBehaviour {
 		switch (nextDirection)
         {
             case direction.North:
-				spawnLocation = new Vector3(Random.Range(-1.5f, 1.5f), 7, 0);//new Vector3((player.transform.position.x + spawnMargin), 7, 0);
+				spawnLocation = Camera.main.ViewportToWorldPoint(new Vector3(randomSpawn, 1.2f, 0.5f));//new Vector3((player.transform.position.x + spawnMargin), 7, 0);
                 peakLocation = new Vector3(spawnLocation.x, (spawnLocation.y - peakOffset), spawnLocation.z);
 				endlocation = peakLocation.y;
                 break;
             case direction.East:
-				spawnLocation = new Vector3(4.5f, Random.Range(-3.5f, 3.5f), 0);//new Vector3(4.5f, (player.transform.position.y + spawnMargin), 0);
+				spawnLocation = Camera.main.ViewportToWorldPoint(new Vector3(1.3f, randomSpawn, 0.5f));//new Vector3(4.5f, (player.transform.position.y + spawnMargin), 0);
                 peakLocation = new Vector3((spawnLocation.x - peakOffset), spawnLocation.y, spawnLocation.z);
 				endlocation = peakLocation.x;
                 break;
             case direction.South:
-				spawnLocation = new Vector3(Random.Range(-1.5f, 1.5f), -7, 0);//new Vector3((player.transform.position.x + spawnMargin), -7, 0);
+				spawnLocation = Camera.main.ViewportToWorldPoint(new Vector3(randomSpawn, -.2f, 0.5f));//new Vector3((player.transform.position.x + spawnMargin), -7, 0);
                 peakLocation = new Vector3(spawnLocation.x, (spawnLocation.y + peakOffset), spawnLocation.z);
 				endlocation = peakLocation.y;
                 break;
             case direction.West:
-				spawnLocation = new Vector3(-4.5f, Random.Range(-3.5f, 3.5f), 0);//new Vector3(-4.5f, (player.transform.position.y + spawnMargin), 0);
+				spawnLocation = Camera.main.ViewportToWorldPoint(new Vector3(-.3f, randomSpawn, 0.5f));//new Vector3(-4.5f, (player.transform.position.y + spawnMargin), 0);
                 peakLocation = new Vector3((spawnLocation.x + peakOffset), spawnLocation.y, spawnLocation.z);
 				endlocation = peakLocation.x;
                 break;
@@ -173,12 +176,12 @@ public class Shuriken : MonoBehaviour {
 
 		//transform.DOKill(false);
 		//transform.DOMove(peakLocation, peakTime);
-		//transform.DORotate(new Vector3(0, 0, -1), peakTime);
+		//transform.DORotate(new Vector3(0, 0, -3), peakTime);
 
 		transform.Translate(peakDirection * Time.deltaTime * peakSpeed, Space.World);
         
 		//transform.position = spawnLocation + new Vector3(Mathf.Sin(Time.time), 0, 0);
-
+        
 
 		peakTime -= Time.deltaTime;
 		if (peakTime <= 0){
