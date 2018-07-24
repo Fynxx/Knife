@@ -196,7 +196,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -629,16 +629,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roundManager: {fileID: 0}
   peakNShoot: {fileID: 0}
+  powerUpSpawner: {fileID: 0}
   bloodSplatter: {fileID: 0}
-  roundManager: {fileID: 0}
-  peakNShoot: {fileID: 0}
-  bloodSplatter: {fileID: 0}
+  nextDirection: 0
   sprenderer: {fileID: 0}
   rotating: {fileID: 21300000, guid: e5eb19449b04a4eff811e66e5cb23756, type: 3}
   still: {fileID: 21300000, guid: e5eb19449b04a4eff811e66e5cb23756, type: 3}
-  speed: 0
   currentState: 0
   nextState: 0
+  player: {fileID: 0}
+  shurikenIndicator: {fileID: 0}
+  peakTimer: 0
+  shootTimer: 0
+  breathingTime: 0
+  peakSpeed: 0
+  shootSpeed: 0
+  endlocation: 0
+  peakTime: 0
+  starPosition: {x: 0, y: 0, z: 0}
+  spawnLocation: {x: 0, y: 0, z: 0}
+  peakLocation: {x: 0, y: 0, z: 0}
+  shootDirection: {x: 0, y: 0, z: 0}
+  peakDirection: {x: 0, y: 0, z: 0}
+  shootLocation: {x: 0, y: 0, z: 0}
+  playerLocation: {x: 0, y: 0, z: 0}
 --- !u!114 &114843345542401208
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -695,5 +709,5 @@ SpriteRenderer:
   m_Size: {x: 1.84, y: 1.84}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0

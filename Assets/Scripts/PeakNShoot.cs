@@ -60,6 +60,11 @@ public class PeakNShoot : MonoBehaviour {
 		//print(currentState);
 	}
 
+	public int SetDirection(){
+		int ret  = Random.Range(0, 4);
+		return ret;
+	}
+
 	public void CreateStars(){
 		for (int i = 0; i < pooledAmount; i++)
         {
