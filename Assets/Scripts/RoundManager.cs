@@ -37,7 +37,7 @@ public class RoundManager : MonoBehaviour {
 	public bool fillHoldTimer;
     
 	//public ShurikenSpawner dangerSpawner;
-	public PeakNShoot peakNShoot;
+	//public PeakNShoot peakNShoot;
 
 	//private float _nextDangerTimer;
 	//private float _nextDangerShot;
@@ -49,7 +49,7 @@ public class RoundManager : MonoBehaviour {
 		//currentDanger = danger.None;
         currentRound = round.Fresh;
 		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
-		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 		//_nextDangerShot = _nextDangerResetValue;
@@ -152,14 +152,14 @@ public class RoundManager : MonoBehaviour {
 		case round.Reset:
 				//peakNShoot.Initiation();
 				//dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
-				peakNShoot.EmptyStars();            
+				//peakNShoot.EmptyStars();            
     			score = 0;
-				peakNShoot.starsInGame = 1;
-				peakNShoot.starMultiplier = 0;
+				//peakNShoot.starsInGame = 1;
+				//peakNShoot.starMultiplier = 0;
     			//_nextDangerTimer = 0;
     			//_nextDangerShot = _nextDangerResetValue;
 				player.hitPoints = 1;
-				peakNShoot.CreateStars();
+				//peakNShoot.CreateStars();
 				multiplier.countDown = 0;
 				multiplier.coins = 0;
 				adMultiplier--;
