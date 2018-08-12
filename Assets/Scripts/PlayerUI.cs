@@ -21,8 +21,11 @@ public class PlayerUI : MonoBehaviour {
 	void Update () {
 		if (roundManager.currentRound == round.Holding)
 		{
-			holdingTime = roundManager.holdTimer;
-			holdingBar.fillAmount = holdingTime;
-		}
+			holdingBar.gameObject.SetActive(true);
+            holdingTime = roundManager.holdTimer;
+            holdingBar.fillAmount = holdingTime;
+		} else if (roundManager.currentRound == round.Playing){
+			holdingBar.gameObject.SetActive(false);
+		}      
 	}
 }

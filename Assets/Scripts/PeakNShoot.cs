@@ -92,7 +92,7 @@ public class PeakNShoot : MonoBehaviour {
 
 	public void Initiation (Shuriken nextStar) {
 		star = nextStar;
-		star.currentState = Shuriken.starState.SetLocation;
+		//star.currentState = Shuriken.starState.SetLocation;
 		star.gameObject.SetActive(true);
         peakTimer = 0f;
         shootTimer = 0f;

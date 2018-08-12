@@ -27,7 +27,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1649566624039808
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,7 +44,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1742048569056276
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,7 +61,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1804974523169324
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,7 +78,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1836349802117432
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,8 +157,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1836349802117432}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.77, y: 5.01, z: 0.03515625}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -2.489, y: 6.493, z: 0.03515625}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4477670219915830}
   - {fileID: 4331147548985706}
@@ -196,12 +196,12 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.8
+  m_Radius: 0.7
 --- !u!96 &96159916253538620
 TrailRenderer:
   serializedVersion: 2
@@ -586,7 +586,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 0}
-  peakNShoot: {fileID: 0}
   star: {fileID: 114623710464698750}
 --- !u!114 &114453101978178586
 MonoBehaviour:
@@ -600,7 +599,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 0}
-  peakNShoot: {fileID: 0}
   star: {fileID: 114623710464698750}
 --- !u!114 &114554215912319478
 MonoBehaviour:
@@ -614,7 +612,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 0}
-  peakNShoot: {fileID: 0}
   star: {fileID: 114623710464698750}
 --- !u!114 &114623710464698750
 MonoBehaviour:
@@ -628,14 +625,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roundManager: {fileID: 0}
-  peakNShoot: {fileID: 0}
   powerUpSpawner: {fileID: 0}
+  waveManager: {fileID: 0}
   bloodSplatter: {fileID: 0}
   nextDirection: 0
   sprenderer: {fileID: 0}
   rotating: {fileID: 21300000, guid: e5eb19449b04a4eff811e66e5cb23756, type: 3}
   still: {fileID: 21300000, guid: e5eb19449b04a4eff811e66e5cb23756, type: 3}
-  currentState: 0
+  currentState: 1
   nextState: 0
   player: {fileID: 0}
   shurikenIndicator: {fileID: 0}
@@ -665,7 +662,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 0}
-  peakNShoot: {fileID: 0}
   star: {fileID: 114623710464698750}
 --- !u!212 &212863473238387082
 SpriteRenderer:
@@ -701,7 +697,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 07dff00800fe2458daf65722f8299b69, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e5eb19449b04a4eff811e66e5cb23756, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -709,5 +705,5 @@ SpriteRenderer:
   m_Size: {x: 1.84, y: 1.84}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0

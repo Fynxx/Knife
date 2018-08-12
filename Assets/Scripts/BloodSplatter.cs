@@ -28,7 +28,7 @@ public class BloodSplatter : MonoBehaviour {
 
 	void RandomRotation(){
 		Vector3 euler = transform.eulerAngles;
-		euler = new Vector3 (0, 0, Random.Range(0f, 360f));
+		euler = new Vector3(0, 0, Random.Range(-90f, 90f));
 		transform.eulerAngles = euler;
 	}
 }

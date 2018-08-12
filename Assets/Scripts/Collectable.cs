@@ -10,7 +10,7 @@ public class Collectable : MonoBehaviour {
 	}
 
 	public void Die(GameObject item){
-		TapticManager.Impact(ImpactFeedback.Midium);
+		//TapticManager.Impact(ImpactFeedback.Midium);
 		item.SetActive(false);
 	}
 }

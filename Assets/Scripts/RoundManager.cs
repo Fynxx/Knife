@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Advertisements;
+using UnityEngine.Analytics;
+using UnityEngine.SceneManagement;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using TapticPlugin;
 
-public enum round {Fresh, Holding, Playing, Reset, Ended, Killed, Settings, Hold};
+public enum round {Fresh, Holding, Playing, Reset, Ended, Killed, Settings };
 
 public class RoundManager : MonoBehaviour {
 
@@ -16,6 +18,7 @@ public class RoundManager : MonoBehaviour {
     public StateManager stateManager;
 	public Player player;
 	public Multiplier multiplier;
+	public WaveManager waveManager;
 	//public enum danger {None, Knife, Shuriken, Grater};
 	//public danger currentDanger;
 
@@ -27,6 +30,7 @@ public class RoundManager : MonoBehaviour {
 	public int highscore;
     public int lives;
 	public int adMultiplier;
+	public int timesPlayed;
 	//public int hitPoints;
 
 	public Text scoreLabel;
@@ -42,6 +46,7 @@ public class RoundManager : MonoBehaviour {
 	//private float _nextDangerTimer;
 	//private float _nextDangerShot;
 	private PlayerData data;
+	private Scene thisScene;
 
 	void Start () {
         //scoreLabel = GameObject.Find ("ScoreLabel").GetComponent<Text> ();
@@ -52,9 +57,11 @@ public class RoundManager : MonoBehaviour {
 		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
+		waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
 		//_nextDangerShot = _nextDangerResetValue;
 		Load ();
 		adMultiplier = 5;
+		thisScene = SceneManager.GetActiveScene();
 	}
 	
 	void Update () {
@@ -63,6 +70,7 @@ public class RoundManager : MonoBehaviour {
 		//		DangerSwitcher ();
 		//print(currentRound);
 		//print();
+		//print(currentRound);
 	}
 
 	public void ChangeRound(){
@@ -83,7 +91,7 @@ public class RoundManager : MonoBehaviour {
 						switch (touch) {
 						case TouchPhase.Began:
     						    TapticManager.Impact(ImpactFeedback.Light);
-    							currentRound = round.Reset;
+								currentRound = round.Reset;
     							isDead = false;
 							break;
 						case TouchPhase.Moved:
@@ -144,30 +152,35 @@ public class RoundManager : MonoBehaviour {
 		}
 	}
 
-	public void Rounds(){ 
-		switch (currentRound) {
-		case round.Fresh:
-			    score = 0;
-			break;
-		case round.Reset:
-				//peakNShoot.Initiation();
-				//dangerSpawner.weapon.transform.position = new Vector3(0, 7, 0);
-				//peakNShoot.EmptyStars();            
-    			score = 0;
-				//peakNShoot.starsInGame = 1;
-				//peakNShoot.starMultiplier = 0;
-    			//_nextDangerTimer = 0;
-    			//_nextDangerShot = _nextDangerResetValue;
-				player.hitPoints = 1;
-				//peakNShoot.CreateStars();
-				multiplier.countDown = 0;
-				multiplier.coins = 0;
-				adMultiplier--;
-				resetTimer = 10f;
-				holdTimer = 1f;
-				heldForLongEnough = false;
-				fillHoldTimer = false;
-    			//currentDanger = danger.None;
+	public void Rounds(){
+		switch (currentRound)
+		{
+			case round.Fresh:
+				score = 0;
+				break;
+			case round.Reset:
+				if (score > 0) { 
+    				AnalyticsEvent.Custom("new_round", new Dictionary<string, object>
+    				{
+    					{ "current_score", score },
+    					{ "time_elapsed", Time.timeSinceLevelLoad },
+    					{ "times_played", timesPlayed}
+    				});
+    		    }
+                player.hitPoints = 1;            
+                multiplier.countDown = 0;
+                multiplier.coins = 0;
+                adMultiplier--;
+                resetTimer = 10f;
+                holdTimer = 1f;
+                heldForLongEnough = false;
+                fillHoldTimer = false;            
+                if (timesPlayed > 0)
+                {
+                    waveManager.ResetField();
+                }
+                timesPlayed++;
+				score = 0;
 				currentRound = round.Holding;
 			break;
 		case round.Holding:
@@ -185,21 +198,16 @@ public class RoundManager : MonoBehaviour {
 			break;
 		case round.Ended:
 		case round.Killed:
-    //        time += Time.deltaTime;
-    //        if (time < .01f){
-    //            //Handheld.Vibrate();
-				//TapticManager.Notification(NotificationFeedback.Error);
-            //}
-
     			if (score > highscore) {
     				highscore = score;
     				Save ();
     			}
 				if (adMultiplier <= 0){
-					Advertisement.Show();
+					//Advertisement.Show();
 					adMultiplier = 5;
 					currentRound = round.Fresh;
 				}
+
 				//resetTimer -= Time.deltaTime;
 				//if (resetTimer <= 0){
 				//	currentRound = round.Fresh;
@@ -222,16 +230,6 @@ public class RoundManager : MonoBehaviour {
             currentRound = round.Fresh;
         }
 	}
-
-    public void StartGame()
-    {
-        currentRound = round.Playing;
-    }
-    public void EndGame()
-    {
-        currentRound = round.Fresh;
-    }
-
 
 	public void Save(){
 		BinaryFormatter bf = new BinaryFormatter ();
@@ -268,7 +266,23 @@ public class RoundManager : MonoBehaviour {
 		}
 	}
 
-		
+	private void OnApplicationQuit()
+	{
+		AnalyticsEvent.Custom("times_played", new Dictionary<string, object>
+                {
+                    { "times_played", timesPlayed }
+                });
+	}
+
+	private void OnApplicationPause()
+	{
+		AnalyticsEvent.Custom("times_played", new Dictionary<string, object>
+                {
+                    { "times_played", timesPlayed }
+                });
+		timesPlayed = 0;
+	}
+
 }
 
 [Serializable]
@@ -276,44 +290,3 @@ class PlayerData
 {
 	public int score;
 }
-
-//public void DangerSwitcher(){
-//  if (currentRound == round.Playing) {
-//      _nextDangerTimer = _nextDangerTimer;
-
-//      switch (currentDanger) {
-//      case danger.None:
-//          if (_nextDangerTimer > _nextDangerShot) {
-//              currentDanger = (danger)UnityEngine.Random.Range (0, 4);
-//              _nextDangerShot -= 0.1f;
-//              _nextDangerTimer = 0;
-//          }
-
-//          break;
-//      case danger.Knife:
-//          dangerKnife.KnifeRotation ();
-//          if (_nextDangerTimer > _nextDangerShot) {
-//              currentDanger = danger.Shuriken;
-//              _nextDangerShot -= 0.1f;
-//              _nextDangerTimer = 0;
-//          }
-//          break;
-//      case danger.Shuriken:
-//          if (_nextDangerTimer > _nextDangerShot) {
-//              currentDanger = (danger)UnityEngine.Random.Range (1, 4);
-//              _nextDangerShot -= 0.1f;
-//              _nextDangerTimer = 0;
-//          }
-//          break;
-//      case danger.Grater:
-//          if (_nextDangerTimer > _nextDangerShot) {
-//              currentDanger = (danger)UnityEngine.Random.Range (1, 4);
-//              _nextDangerShot -= 0.1f;
-//              _nextDangerTimer = 0;
-//          }
-//          break;
-//      default:
-//          break;
-//      }
-//  }
-//}

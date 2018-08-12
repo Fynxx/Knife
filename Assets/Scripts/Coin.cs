@@ -6,14 +6,18 @@ using UnityEngine.UI;
 public class Coin : Collectable
 {
 
-	public Spawner spawner;
+	//public Spawner spawner;
 	public RoundManager roundManager;
 	public Multiplier multiplier;
-	public PeakNShoot peakNShoot;
+	//public PeakNShoot peakNShoot;
+
+	public enum state { inactive, active };
+	public state currentState;
        
 	public int point;
 
-	public float lifeTime;
+    public float lifeTime;
+	public float speed;
 
 	public Image coinLifeBar;
 
@@ -22,11 +26,12 @@ public class Coin : Collectable
 	void Start()
 	{
 		coin = this.gameObject;
-		spawner = GameObject.Find("CoinSpawner").GetComponent<Spawner>();
+		//spawner = GameObject.Find("CoinSpawner").GetComponent<Spawner>();
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 		coinLifeBar = GameObject.Find("CoinLifeBar").GetComponent<Image>();
-		peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
+		speed = 6f;
 	}
     
 	void OnEnable()
@@ -37,44 +42,40 @@ public class Coin : Collectable
 	void Update()
 	{
 		coinLifeBar.fillAmount = lifeTime;
-		if (roundManager.currentRound == round.Playing)
+		if (roundManager.currentRound == round.Playing && currentState == state.active) 
 		{
-			if (lifeTime > 0)
-			{
-				lifeTime -= (Time.deltaTime * 0.25f);
-			} else if (lifeTime < 0){
-				spawner.isAlive = false;
-				Die(coin);
-			}
+			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
 		}
 
-		switch (roundManager.currentRound)      
-		{
-			case round.Playing:
-				if (lifeTime > 0)
-                {
-                    lifeTime -= (Time.deltaTime * .66f);
-                }
-                else if (lifeTime < 0)
-                {
-                    spawner.isAlive = false;
-					spawner.isAllowedToSpawn = true;
-                    Die(coin);
-					multiplier.AddMultiplier(-.125f);
-                }
-				break;
-			case round.Ended:
-			case round.Killed:
-				spawner.isAlive = false;
-				//spawner.isAllowedToSpawn = true;
-				Die(coin);
-				break;
-			default:
-				break;
-		}
+		//switch (roundManager.currentRound)      
+		//{
+		//	case round.Playing:
+		//		if (lifeTime > 0)
+  //              {
+  //                  lifeTime -= (Time.deltaTime * .66f);
+  //              }
+  //              else if (lifeTime < 0)
+  //              {
+  //   //               spawner.isAlive = false;
+		//			//spawner.isAllowedToSpawn = true;
+  //                  Die(coin);
+		//			multiplier.AddMultiplier(-.125f);
+  //              }
+		//		break;
+		//	case round.Ended:
+		//	case round.Killed:
+		//		//spawner.isAlive = false;
+		//		//spawner.isAllowedToSpawn = true;
+		//		Die(coin);
+		//		break;
+		//	default:
+		//		break;
+		//}
 
 		if (roundManager.currentRound == round.Ended){
-			spawner.isAllowedToSpawn = true;
+			//spawner.isAllowedToSpawn = true;
+			Die(coin);
+			currentState = state.inactive;
 		}
 	}
 
@@ -82,12 +83,12 @@ public class Coin : Collectable
 	{
 		if (collision.tag == "Player")
 		{
-			spawner.isAlive = false;
-			spawner.isAllowedToSpawn = true;
-			multiplier.AddMultiplier(.125f);
-			multiplier.AddCoins(1);
+			//spawner.isAlive = false;
+			//spawner.isAllowedToSpawn = true;
+			//multiplier.AddMultiplier(.125f);
+			//multiplier.AddCoins(1);
 			Die(coin);  
-			peakNShoot.AddToScore(1);
+			//peakNShoot.AddToScore(1);
 		}
 	}
 }
