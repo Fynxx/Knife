@@ -10,7 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using TapticPlugin;
 
-public enum round {Fresh, Holding, Playing, Reset, Ended, Killed, Settings };
+public enum round {Fresh, Holding, Playing, Reset, Ended, Killed, Settings, Pause };
 
 public class RoundManager : MonoBehaviour {
 
@@ -25,9 +25,12 @@ public class RoundManager : MonoBehaviour {
 	public float time;
 	public float resetTimer;
 	public float holdTimer;
+	public float pauseTimer;
 
 	public int score;
 	public int highscore;
+	public int earnedXP;
+	public int totalXP;
     public int lives;
 	public int adMultiplier;
 	public int timesPlayed;
@@ -114,9 +117,9 @@ public class RoundManager : MonoBehaviour {
 										currentRound = round.Holding;
 									}
     							} else {
-    								currentRound = round.Killed;
+									currentRound = round.Killed;
     							}
-							break;
+							break;                        
 						case TouchPhase.Ended:
 								if (currentRound == round.Playing)//|| currentRound == round.Holding
                                 {
@@ -134,10 +137,11 @@ public class RoundManager : MonoBehaviour {
 										}
                                     }
                                 }
-								if (currentRound == round.Holding){
-									fillHoldTimer = true;
-								}
-							break;
+                                if (currentRound == round.Holding){
+                                    fillHoldTimer = true;
+                                }
+								waveManager.AddXP();
+                            break;
 						default:
 							    currentRound = round.Fresh;
 							break;
@@ -196,18 +200,15 @@ public class RoundManager : MonoBehaviour {
 		case round.Playing:
                 time = 0;
 			break;
+		case round.Pause:
+            time = 0;
+            break;
 		case round.Ended:
 		case round.Killed:
     			if (score > highscore) {
     				highscore = score;
     				Save ();
     			}
-				if (adMultiplier <= 0){
-					//Advertisement.Show();
-					adMultiplier = 5;
-					currentRound = round.Fresh;
-				}
-
 				//resetTimer -= Time.deltaTime;
 				//if (resetTimer <= 0){
 				//	currentRound = round.Fresh;
@@ -237,6 +238,7 @@ public class RoundManager : MonoBehaviour {
 
 		data = new PlayerData ();
         data.score = highscore;
+		data.xp = totalXP;
 
 		bf.Serialize (file, data);
 		file.Close ();
@@ -249,7 +251,8 @@ public class RoundManager : MonoBehaviour {
 			PlayerData data = (PlayerData)bf.Deserialize (file);
 			file.Close();
 
-            highscore = data.score;           
+            highscore = data.score;
+			totalXP = data.xp;
 		}
 	}
 
@@ -261,6 +264,8 @@ public class RoundManager : MonoBehaviour {
 
 			data.score = 0;
             highscore = 0;
+			data.xp = 0;
+			totalXP = 0;
 			bf.Serialize (file, data);
 			file.Close ();
 		}
@@ -281,7 +286,7 @@ public class RoundManager : MonoBehaviour {
                     { "times_played", timesPlayed }
                 });
 		timesPlayed = 0;
-	}
+	}   
 
 }
 
@@ -289,4 +294,5 @@ public class RoundManager : MonoBehaviour {
 class PlayerData
 {
 	public int score;
+	public int xp;
 }

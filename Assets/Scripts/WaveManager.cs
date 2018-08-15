@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-	public enum step { ChooseWeapon, ChooseKatanaSide, ChooseShurikenWave, FireKatana, SetShurikenWave, FireShuriken, AddScore, Reset };
+	public enum step { ChooseWeapon, ChooseKatanaSide, FireKatana, SetShurikenWave, FireShuriken, AddScore, Reset };
 	//public enum step { ChooseWeapon, Katana, Shuriken, Fire, AddScore, Reset };
 	public step currentStep;
 	public enum Weapons { Shuriken, Katana };
@@ -30,11 +30,15 @@ public class WaveManager : MonoBehaviour
 
 	public Vector3[] waveLocations;
 
-	public int pooledAmount = 25;
+	public int pooledAmount = 5;
 	public int waveLength;
 
 	public float speed;
 	public const float initialSpeed = 5;
+	public float wallStartLocation;
+	public const float initialWallStartLocation = -2.2f;
+	float ranY;
+	public List<Shuriken> starsOnField;
 
 	void Start()
 	{
@@ -52,6 +56,7 @@ public class WaveManager : MonoBehaviour
 			stars.Add(obj);
 			//obj.currentState = Shuriken.starState.inactive;
 		}
+		wallStartLocation = initialWallStartLocation;
 		speed = initialSpeed;
 	}
 
@@ -74,7 +79,7 @@ public class WaveManager : MonoBehaviour
 					}
 					else
 					{
-						currentStep = step.ChooseShurikenWave;
+						currentStep = step.SetShurikenWave;
 					}
 					break;
 				case step.ChooseKatanaSide:
@@ -96,19 +101,9 @@ public class WaveManager : MonoBehaviour
 						currentStep = step.FireKatana;
 					}
 					break;
-				case step.ChooseShurikenWave:
-					int wave = Random.Range(0, 10);
-					if (wave > 5)
-					{
-						WaveOne();
-						currentStep = step.SetShurikenWave;
-					}
-					else
-					{
-						WaveTwo();
-						currentStep = step.SetShurikenWave;
-					}
-					//waves.WaveSelector(shurikenWave);
+				case step.SetShurikenWave:
+					SetShurikenWall();
+					currentStep = step.FireShuriken;
 					break;
 				case step.FireKatana:
 					if (katana.state == Katana.State.inactive)
@@ -116,21 +111,19 @@ public class WaveManager : MonoBehaviour
 						currentStep = step.AddScore;
 					}
 					break;
-				case step.SetShurikenWave:
-					SetWave();
-					currentStep = step.FireShuriken;
-					break;
 				case step.FireShuriken:
-					if (!stars[waveLength - 1].gameObject.activeSelf)
-					{
+					//if (!stars[pooledAmount-1].gameObject.activeSelf)
+					//{
+					//	currentStep = step.AddScore;
+					//}
+
+					if (starsOnField.Count == 0){
 						currentStep = step.AddScore;
 					}
 					break;
 				case step.AddScore:
 					AddToScore(1);
-					//katana.CalculateSpeed();
-					//star.CalculateSpeed();
-					//speed = speed - .1f;
+					wallStartLocation = initialWallStartLocation;
 					currentStep = step.Reset;
 					break;
 				default:
@@ -138,6 +131,18 @@ public class WaveManager : MonoBehaviour
 					break;
 			}
 		}
+	}
+
+	public void SetShurikenWall(){
+		for (int i = 0; i < pooledAmount; i++)
+        {
+			ranY = Random.Range(6f, 10f);
+            currentStar = stars[i];
+			currentStar.transform.position = new Vector3(wallStartLocation, ranY, 0);
+            currentStar.gameObject.SetActive(true);         
+            wallStartLocation = wallStartLocation + 0.9f;
+			starsOnField.Add(currentStar);
+        }
 	}
 
 	public void ResetField()
@@ -158,6 +163,9 @@ public class WaveManager : MonoBehaviour
 		speed = speed + (player.multiplier * .05f);
 	}
 
+	public void AddXP(){
+		roundManager.totalXP = roundManager.totalXP + (roundManager.score * 100);
+	}
 
 	void SetWave()
 	{
@@ -181,63 +189,6 @@ public class WaveManager : MonoBehaviour
 			stars[i].gameObject.SetActive(false);
 		}
 		katana.gameObject.SetActive(false);
-	}
-
-	void ResetWaveArray()
-	{
-		for (int i = 0; i < pooledAmount; i++)
-		{
-			waveLocations[i] = new Vector3(0, 0, 0);
-		}
-	}
-
-	//void Reset()
-	//{
-	//	for (int i = 0; i < pooledAmount; i++)
-	//	{
-	//		currentStar = activeStars[0];
-	//		inactiveStars.Add(currentStar);
-	//		inactiveStars[i].transform.position = waveLocations[i];
-	//		activeStars.Remove(currentStar);
-	//	}
-	//}
-	void FixWaveLocations()
-	{
-		for (int i = 0; i < pooledAmount; i++)
-		{
-			waveLocations[i] = new Vector3((waveLocations[i].x - 3.5f), (waveLocations[i].y + 6.5f), 0);
-		}
-	}
-	void WaveOne()
-	{
-		ResetWaveArray();
-		waveLength = 10;
-		waveLocations[0] = new Vector3(1, 1, 0);
-		waveLocations[1] = new Vector3(2, 1, 0);
-		waveLocations[2] = new Vector3(3, 1, 0);
-		waveLocations[3] = new Vector3(4, 1, 0);
-		waveLocations[4] = new Vector3(4, 2, 0);
-		waveLocations[5] = new Vector3(6, 5, 0);
-		waveLocations[6] = new Vector3(5, 5, 0);
-		waveLocations[7] = new Vector3(4, 5, 0);
-		waveLocations[8] = new Vector3(3, 5, 0);
-		waveLocations[9] = new Vector3(3, 6, 0);
-		FixWaveLocations();
-	}
-
-	void WaveTwo()
-	{
-		ResetWaveArray();
-		waveLength = 8;
-		waveLocations[0] = new Vector3(5, 1, 0);
-		waveLocations[1] = new Vector3(6, 1, 0);
-		waveLocations[2] = new Vector3(4, 2, 0);
-		waveLocations[3] = new Vector3(3, 3, 0);
-		waveLocations[4] = new Vector3(4, 6, 0);
-		waveLocations[5] = new Vector3(1, 7, 0);
-		waveLocations[6] = new Vector3(2, 7, 0);
-		waveLocations[7] = new Vector3(3, 7, 0);
-		FixWaveLocations();
 	}
 }
 

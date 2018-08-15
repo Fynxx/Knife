@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     //public Text highScoreLabelEnded;
 	public Text highScoreLabelMenu;
     public Text lowerLabel;
+	public Text xp;
 
     public Image dangerNorth;
     public Image dangerEast;
@@ -52,6 +53,7 @@ public class UIManager : MonoBehaviour
         //highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
 		//lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
+		xp = GameObject.Find("TotalXP").GetComponent<Text>();
 
         //dangerNorth = GameObject.Find("DangerNorth").GetComponent<Image>();
         //dangerEast = GameObject.Find("DangerEast").GetComponent<Image>();
@@ -99,6 +101,7 @@ public class UIManager : MonoBehaviour
         //scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
         scoreLabelEnded.text = roundManager.score.ToString();//C# tostring formatting
 		highScoreLabelFresh.text = roundManager.highscore.ToString();
+		xp.text = roundManager.totalXP.ToString();
 		//highScoreLabelEnded.text = roundManager.highscore.ToString("D3");
 		if (roundManager.highscore > 0)
 		{

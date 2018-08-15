@@ -9,18 +9,19 @@ public class Shuriken : Weapon {
 	public enum State { inactive, active };
 	public State state;
 	public GameObject player;
+	float ran;
 
 	void Start () {    
 		player = GameObject.Find("FingerTarget");
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
         waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
-		speed = waveManager.speed;
+		ran = Random.Range(-.5f, .5f);
 	}
 
 	void Update()
 	{
 		Spin();
-		speed = waveManager.speed;
+		speed = waveManager.speed + ran;
 		if (roundManager.currentRound == round.Playing && gameObject.activeSelf == true)
 		{
 			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
@@ -37,6 +38,7 @@ public class Shuriken : Weapon {
 	void OnBecameInvisible()
     {
 		gameObject.SetActive(false);
+		waveManager.starsOnField.Remove(this);
 		//state = State.inactive;
     }   
 

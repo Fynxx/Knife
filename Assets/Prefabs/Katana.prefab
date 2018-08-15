@@ -20,12 +20,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4092149018453804}
   - component: {fileID: 212670771011431790}
-  - component: {fileID: 61678276085461602}
   - component: {fileID: 114104565565089166}
   - component: {fileID: 50570220278716042}
+  - component: {fileID: 60565788075597346}
   m_Layer: 0
   m_Name: Katana
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,8 +63,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &61678276085461602
-BoxCollider2D:
+--- !u!60 &60565788075597346
+PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -85,9 +85,26 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 5.03, y: 0.78}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 2.205, y: 0.24}
+      - {x: 1.4549999, y: 0.26}
+      - {x: 0.53499997, y: 0.29}
+      - {x: -1.0849999, y: 0.35}
+      - {x: -2.0149999, y: 0.39}
+      - {x: -2.5149999, y: 0.39}
+      - {x: -2.5149999, y: 0.35}
+      - {x: -2.395, y: 0.22999999}
+      - {x: -1.8249999, y: -0.26999998}
+      - {x: -1.665, y: -0.29}
+      - {x: -1.2149999, y: -0.29999998}
+      - {x: -0.775, y: -0.32}
+      - {x: 0.005, y: -0.35}
+      - {x: 0.565, y: -0.37}
+      - {x: 1.365, y: -0.39}
+      - {x: 2.5149999, y: -0.39}
+      - {x: 2.5149999, y: 0.22}
+      - {x: 2.5049999, y: 0.22999999}
 --- !u!114 &114104565565089166
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,8 +117,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roundManager: {fileID: 0}
+  waveManager: {fileID: 0}
+  speed: 0
   state: 0
-  speed: 10
 --- !u!212 &212670771011431790
 SpriteRenderer:
   m_ObjectHideFlags: 1

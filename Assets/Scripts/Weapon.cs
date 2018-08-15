@@ -18,10 +18,4 @@ public class Weapon : MonoBehaviour {
 	void Update () {
 		
 	}
-
-	public void CalculateSpeed()
-	{
-		speed = 7 + (roundManager.score / 10);
-		print("increase speed");
-	}
 }
