@@ -17,10 +17,10 @@ public class RoundManager : MonoBehaviour {
 
 	public State currentState;
 
-    public enum ActiveState { Reset, Playing, Holding, Dieing };
+    public enum ActiveState { Reset, Playing, Holding, Dieing, Continue };
     public ActiveState activeState;
 
-    public enum InactiveState { Start, Paused, Dead, Ended };
+    public enum InactiveState { Start, Paused, Dead, Ended, Continue };
     public InactiveState inactiveState;
 
     public StateManager stateManager;
@@ -50,6 +50,9 @@ public class RoundManager : MonoBehaviour {
     public bool inGame;
 	public bool heldForLongEnough;
 	public bool fillHoldTimer;
+
+	public bool showAdButton;
+	public bool adShown;
     
 	//public ShurikenSpawner dangerSpawner;
 	//public PeakNShoot peakNShoot;
@@ -79,6 +82,7 @@ public class RoundManager : MonoBehaviour {
 	void Update () {
 		ChangeState ();
         States();
+		WatchAd();
 		//		DangerSwitcher ();
 	}
 
@@ -104,7 +108,7 @@ public class RoundManager : MonoBehaviour {
 								{
     								TapticManager.Impact(ImpactFeedback.Light);
     								audioManager.ButtonPressAudio();
-    								if (inactiveState == InactiveState.Paused)
+									if (inactiveState == InactiveState.Paused || inactiveState == InactiveState.Continue)
     								{
     									currentState = State.Active;
     									ResetGame();
@@ -112,7 +116,7 @@ public class RoundManager : MonoBehaviour {
     								else
     								{
     									currentState = State.Active;
-    									activeState = ActiveState.Reset;
+    									activeState = ActiveState.Reset; // ResetGame and FullReset
     								}
     						    }
 								break;
@@ -164,6 +168,8 @@ public class RoundManager : MonoBehaviour {
 				inactiveState = InactiveState.Paused;
 			} else if (activeState == ActiveState.Dieing){
 				inactiveState = InactiveState.Dead;
+			} else if (activeState == ActiveState.Continue){
+				inactiveState = InactiveState.Continue;
 			}
 			switch (inactiveState)
 			{
@@ -228,6 +234,7 @@ public class RoundManager : MonoBehaviour {
     public void FullReset(){
         score = 0;
 		pauseTimer = 10f;
+		adShown = false;
 		waveManager.ResetSpeed();
 	}
 
@@ -245,6 +252,14 @@ public class RoundManager : MonoBehaviour {
 		FullReset();
 		currentState = State.Inactive;
 		inactiveState = InactiveState.Start;
+	}
+
+	public void WatchAd(){
+		if (score > 10 && !adShown){
+			showAdButton = true;
+		} else {
+			showAdButton = false;
+		} 
 	}
 
 	private bool IsPointerOverUIObject()

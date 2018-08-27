@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public Text scoreLabelPlayLeft;
     public Text scoreLabelPlayRight;
     public Text scoreLabelEnded;
+	public Text scoreLabelCont;
     public Text highScoreLabelFresh;
     //public Text highScoreLabelEnded;
 	public Text highScoreLabelMenu;
@@ -30,6 +31,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup ended;
     public CanvasGroup settings;
 	public CanvasGroup pause;
+	public CanvasGroup cont;
     //public CanvasGroup hold;
 
     public Canvas menu;
@@ -37,6 +39,8 @@ public class UIManager : MonoBehaviour
     public Canvas settingsC;
 
     public Toggle flipUi;
+
+	public Button watchAdButton;
 
     public RoundManager roundManager;
     public StateManager stateManager;
@@ -53,6 +57,7 @@ public class UIManager : MonoBehaviour
         scoreLabelPlayLeft = GameObject.Find("ScoreLabelPlayLeft").GetComponent<Text>();
         //scoreLabelPlayRight = GameObject.Find("ScoreLabelPlayRight").GetComponent<Text>();
         scoreLabelEnded = GameObject.Find("ScoreLabelEnded").GetComponent<Text>();
+		scoreLabelCont = GameObject.Find("ScoreLabelCont").GetComponent<Text>();
         highScoreLabelFresh = GameObject.Find("HighScoreLabelFresh").GetComponent<Text>();
         //highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
@@ -68,6 +73,7 @@ public class UIManager : MonoBehaviour
         playing = GameObject.Find("RoundPlaying").GetComponent<CanvasGroup>();
         ended = GameObject.Find("RoundEnded").GetComponent<CanvasGroup>();
 		pause = GameObject.Find("RoundPause").GetComponent<CanvasGroup>();
+		cont = GameObject.Find("RoundContinue").GetComponent<CanvasGroup>();
         //hold = GameObject.Find("RoundHold").GetComponent<CanvasGroup>();
         //settings = GameObject.Find("GameSettings").GetComponent<CanvasGroup>();
 
@@ -76,6 +82,8 @@ public class UIManager : MonoBehaviour
         settingsC = GameObject.Find("SettingsCanvas").GetComponent<Canvas>();
 
         flipUi = GameObject.Find("FlipUiToggle").GetComponent<Toggle>();
+
+		watchAdButton = GameObject.Find("WatchAdButton").GetComponent<Button>();
 
         raycastBlockerAd = GameObject.Find("RaycastBlockerAdSlider");
 
@@ -99,15 +107,17 @@ public class UIManager : MonoBehaviour
     {
         CanvasSwitcher();
         CanvasGroupChanger();
+		WatchAdButton();
         //DangerIndicator();
         //ScoreUiFlipper();
         //		testText.text = roundManager.currentDanger.ToString ();
         scoreLabelPlayLeft.text = roundManager.score.ToString();//C# tostring formatting
         //scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
         scoreLabelEnded.text = roundManager.score.ToString();//C# tostring formatting
+		scoreLabelCont.text = roundManager.score.ToString();//C# tostring formatting
 		highScoreLabelFresh.text = roundManager.highscore.ToString();
 		//xp.text = roundManager.totalXP.ToString();
-		//highScoreLabelEnded.text = roundManager.highscore.ToString("D3");
+		//highScoreLabelEnded.text = roundManager.highscore.ToString();
 		if (roundManager.highscore > 0)
 		{
 			highScoreLabelMenu.text = roundManager.highscore.ToString();
@@ -127,6 +137,7 @@ public class UIManager : MonoBehaviour
 				start.alpha = 0;
                 ended.alpha = 0;
                 pause.alpha = 0;  
+				cont.alpha = 0;
 				if (roundManager.activeState == RoundManager.ActiveState.Holding){
 					
 				}
@@ -145,20 +156,31 @@ public class UIManager : MonoBehaviour
 					lowerLabel.text = lowerMessages[0];
 					start.alpha = 1;
 					ended.alpha = 0;
-					pause.alpha = 0;  
+					pause.alpha = 0;
+					cont.alpha = 0;
                 }
                 if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
 					lowerLabel.text = lowerMessages[2];
 					start.alpha = 0;
 					ended.alpha = 1;
                     pause.alpha = 0;               
+					cont.alpha = 0;
                 }
 
                 if (roundManager.inactiveState == RoundManager.InactiveState.Paused)
                 {
 					start.alpha = 0;
                     ended.alpha = 0;
-                    pause.alpha = 1;                
+                    pause.alpha = 1;    
+					cont.alpha = 0;
+                }
+
+				if (roundManager.inactiveState == RoundManager.InactiveState.Continue)
+                {
+                    start.alpha = 0;
+                    ended.alpha = 0;
+                    pause.alpha = 0;
+					cont.alpha = 1;
                 }
                 
                 //settings.alpha = 0;
@@ -216,6 +238,14 @@ public class UIManager : MonoBehaviour
                 break;
         }
     }
+
+	void WatchAdButton(){
+		if (roundManager.showAdButton){
+			watchAdButton.gameObject.SetActive(true);
+		} else {
+			watchAdButton.gameObject.SetActive(false);
+		}
+	}
 
    // void DangerIndicator()
    // {

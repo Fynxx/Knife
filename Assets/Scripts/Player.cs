@@ -109,19 +109,38 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Multiplier"){
 			multiplier = other.GetComponent<MultiplierField>().multiplier;
 			effect = other.GetComponent<MultiplierField>().effect;
-			if (effect == 1)
-            {
-                effect2.enabled = true;
-				effect4.gameObject.SetActive(false);
-            }
-            else if (effect == 2)
-            {
-				effect2.enabled = false;
-                effect4.gameObject.SetActive(true);
-            }
-		} else {
-            effect2.enabled = false;
-            effect4.gameObject.SetActive(false);
+
+            switch (effect)
+			{
+				case 0:
+					effect2.enabled = false;
+					effect4.gameObject.SetActive(false);
+					break;
+				case 1:
+					effect2.enabled = true;
+                    effect4.gameObject.SetActive(false);
+                    break;
+				case 2:
+					effect2.enabled = false;
+                    effect4.gameObject.SetActive(true);
+                    break;
+				default:
+				break;
+			}
+
+		//	if (effect == 1)
+  //          {
+  //              effect2.enabled = true;
+		//		effect4.gameObject.SetActive(false);
+  //          }
+  //          else if (effect == 2)
+  //          {
+		//		effect2.enabled = false;
+  //              effect4.gameObject.SetActive(true);
+  //          }
+		//} else {
+        //    effect2.enabled = false;
+        //    effect4.gameObject.SetActive(false);
         }
 	}
 
