@@ -42,7 +42,7 @@ public class Coin : Collectable
 	void Update()
 	{
 		coinLifeBar.fillAmount = lifeTime;
-		if (roundManager.currentRound == round.Playing && currentState == state.active) 
+		if (roundManager.currentState == State.Active && currentState == state.active) 
 		{
 			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
 		}
@@ -72,11 +72,11 @@ public class Coin : Collectable
 		//		break;
 		//}
 
-		if (roundManager.currentRound == round.Ended){
-			//spawner.isAllowedToSpawn = true;
-			Die(coin);
-			currentState = state.inactive;
-		}
+		//if (roundManager.currentRound == rStateEInactive{
+		//	//spawner.isAllowedToSpawn = true;
+		//	Die(coin);
+		//	currentState = state.inactive;
+		//}
 	}
 
 	void OnTriggerEnter2D(Collider2D collision)

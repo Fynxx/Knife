@@ -12,20 +12,24 @@ public class UIManager : MonoBehaviour
     //public Text highScoreLabelEnded;
 	public Text highScoreLabelMenu;
     public Text lowerLabel;
-	public Text xp;
+	//public Text xp;
 
     public Image dangerNorth;
     public Image dangerEast;
     public Image dangerSouth;
     public Image dangerWest;
 
+	public Image pauseTimerBar;
+	public Text pauseTimerLabel;
+
 	public Slider multiplierBar;
        
     public string[] lowerMessages;
-    public CanvasGroup fresh;
+    public CanvasGroup start;
     public CanvasGroup playing;
     public CanvasGroup ended;
     public CanvasGroup settings;
+	public CanvasGroup pause;
     //public CanvasGroup hold;
 
     public Canvas menu;
@@ -53,16 +57,17 @@ public class UIManager : MonoBehaviour
         //highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
 		//lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
-		xp = GameObject.Find("TotalXP").GetComponent<Text>();
+		//xp = GameObject.Find("TotalXP").GetComponent<Text>();
 
         //dangerNorth = GameObject.Find("DangerNorth").GetComponent<Image>();
         //dangerEast = GameObject.Find("DangerEast").GetComponent<Image>();
         //dangerSouth = GameObject.Find("DangerSouth").GetComponent<Image>();
         //dangerWest = GameObject.Find("DangerWest").GetComponent<Image>();
 
-        fresh = GameObject.Find("RoundFresh").GetComponent<CanvasGroup>();
+        start = GameObject.Find("RoundFresh").GetComponent<CanvasGroup>();
         playing = GameObject.Find("RoundPlaying").GetComponent<CanvasGroup>();
         ended = GameObject.Find("RoundEnded").GetComponent<CanvasGroup>();
+		pause = GameObject.Find("RoundPause").GetComponent<CanvasGroup>();
         //hold = GameObject.Find("RoundHold").GetComponent<CanvasGroup>();
         //settings = GameObject.Find("GameSettings").GetComponent<CanvasGroup>();
 
@@ -101,75 +106,76 @@ public class UIManager : MonoBehaviour
         //scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
         scoreLabelEnded.text = roundManager.score.ToString();//C# tostring formatting
 		highScoreLabelFresh.text = roundManager.highscore.ToString();
-		xp.text = roundManager.totalXP.ToString();
+		//xp.text = roundManager.totalXP.ToString();
 		//highScoreLabelEnded.text = roundManager.highscore.ToString("D3");
 		if (roundManager.highscore > 0)
 		{
 			highScoreLabelMenu.text = roundManager.highscore.ToString();
 		}
+		pauseTimerBar.fillAmount = roundManager.pauseTimer * .1f ;
+		pauseTimerLabel.text = roundManager.pauseTimer.ToString("f");
     }
 
     void CanvasGroupChanger()
     {
-        switch (roundManager.currentRound)
+        switch (roundManager.currentState)
         {
-            case round.Fresh:
-                lowerLabel.text = lowerMessages[0];
-
-                fresh.alpha = 1;
-                playing.alpha = 0;
-                ended.alpha = 0;
-                //settings.alpha = 0;
-                raycastBlockerAd.SetActive(false);
-				player.SetActive(true);
-				player.transform.position = Camera.main.ViewportToWorldPoint(new Vector3(.5f, .2f, .5f));
-				panel.SetActive(false);
-                break;
-			case round.Holding:
-				lowerLabel.text = lowerMessages[0];
-
-                fresh.alpha = 0;
-                playing.alpha = 0;
-                ended.alpha = 1;
-                //settings.alpha = 0;
-                raycastBlockerAd.SetActive(false);
-                player.SetActive(true);
-				panel.SetActive(false);
-				break;
-            case round.Playing:
-                lowerLabel.text = lowerMessages[1];
-
-                fresh.alpha = 0;
-                playing.alpha = 1;
-                ended.alpha = 0;
-                //settings.alpha = 0;
-                raycastBlockerAd.SetActive(false);
-                player.SetActive(true);
+			case State.Active:
 				panel.SetActive(true);
-                break;
-            case round.Ended:
-            case round.Killed:
-                lowerLabel.text = lowerMessages[2];
-
-                fresh.alpha = 0;
+				player.SetActive(true);
+				playing.alpha = 1;
+				start.alpha = 0;
+                ended.alpha = 0;
+                pause.alpha = 0;  
+				if (roundManager.activeState == RoundManager.ActiveState.Holding){
+					
+				}
+				if (roundManager.activeState == RoundManager.ActiveState.Playing)
+                {
+					playing.alpha = 1;
+                }
+				break;
+           
+            case State.Inactive:
+				panel.SetActive(false);
+                player.SetActive(false);
                 playing.alpha = 0;
-                ended.alpha = 1;
+                if (roundManager.inactiveState == RoundManager.InactiveState.Start)
+                {
+					lowerLabel.text = lowerMessages[0];
+					start.alpha = 1;
+					ended.alpha = 0;
+					pause.alpha = 0;  
+                }
+                if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
+					lowerLabel.text = lowerMessages[2];
+					start.alpha = 0;
+					ended.alpha = 1;
+                    pause.alpha = 0;               
+                }
+
+                if (roundManager.inactiveState == RoundManager.InactiveState.Paused)
+                {
+					start.alpha = 0;
+                    ended.alpha = 0;
+                    pause.alpha = 1;                
+                }
+                
                 //settings.alpha = 0;
                 raycastBlockerAd.SetActive(false);
-                player.SetActive(false);
-				panel.SetActive(false);
                 break;
-            case round.Settings:
-                lowerLabel.text = null;
+    //        case State.Settings:
+    //            lowerLabel.text = null;
 
-                fresh.alpha = 0;
-                playing.alpha = 0;
-                ended.alpha = 0;
-                //settings.alpha = 1;
-                raycastBlockerAd.SetActive(true);
-				player.SetActive(false);
-				panel.SetActive(false);
-                break;
+    //            fresh.alpha = 0;
+    //            playing.alpha = 0;
+    //            ended.alpha = 0;
+				//pause.alpha = 0;
+    //            //settings.alpha = 1;
+    //            raycastBlockerAd.SetActive(true);
+				//player.SetActive(false);
+				//panel.SetActive(false);
+                //break;
     //        case round.Hold:
     //            lowerLabel.text = null;
 
@@ -271,6 +277,6 @@ public class UIManager : MonoBehaviour
     }
     public void CloseAd()
     {
-        roundManager.currentRound = round.Killed;
+        //roundManager.currentState = State.Killed;
     }
 }

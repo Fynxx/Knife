@@ -17,14 +17,14 @@ public class PowerUp : Collectable {
 	protected GameObject playerSprite;
 	protected Player player;
     protected RoundManager roundManager;
-	public Spawner spawner;
+	//public Spawner spawner;
 
     private void Awake()
     {
         player = GameObject.Find("FingerTarget").GetComponent<Player>();
         playerSprite = GameObject.Find("FingerSprite");
         roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();  
-		spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
+		//spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
     }
 
 	void Start () {

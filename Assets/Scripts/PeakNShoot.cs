@@ -52,7 +52,7 @@ public class PeakNShoot : MonoBehaviour {
     
 	void Update () 
 	{
-		if (roundManager.currentRound == round.Playing)
+		if (roundManager.currentState == State.Active)
 		{
 			starPosition = star.transform.position;
 			PeakAndShoot();

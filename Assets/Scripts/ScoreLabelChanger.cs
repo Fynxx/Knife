@@ -23,7 +23,7 @@ public class ScoreLabelChanger : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (roundManager.currentRound == round.Playing)
+		if (roundManager.currentState == State.Active)
 		{
 			switch (player.multiplier)
 			{

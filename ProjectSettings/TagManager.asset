@@ -9,6 +9,7 @@ TagManager:
   - Barrier
   - Enemy
   - Multiplier
+  - Button
   layers:
   - Default
   - TransparentFX

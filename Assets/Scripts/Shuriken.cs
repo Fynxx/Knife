@@ -22,7 +22,7 @@ public class Shuriken : Weapon {
 	{
 		Spin();
 		speed = waveManager.speed + ran;
-		if (roundManager.currentRound == round.Playing && gameObject.activeSelf == true)
+		if (roundManager.currentState == global::State.Active && gameObject.activeSelf == true)
 		{
 			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
 		}
@@ -30,7 +30,7 @@ public class Shuriken : Weapon {
 	}		
 
 	void Spin(){
-		if (roundManager.currentRound == round.Playing) {//currentState == starState.Shoot && 
+		if (roundManager.currentState == global::State.Active) {//currentState == starState.Shoot && 
 			transform.Rotate (Vector3.back, Time.deltaTime * 1500);
 		}
 	}

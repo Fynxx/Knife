@@ -7,6 +7,8 @@ public class Player : MonoBehaviour {
 
 	public RoundManager roundManager;
 	public GameObject bloodSplatter;
+	public AudioManager audioManager;
+
 	public Transform powerupIndicator;
 	public Transform noPowerup;
     public Vector3 start;
@@ -25,7 +27,7 @@ public class Player : MonoBehaviour {
 	public ParticleSystem effect4;
 
     public PowerUp powerUp;
-	public Spawner spawner;
+	//public Spawner spawner;
 	public GameObject fingerSprite;
 	//public GameObject multiplierField;
 
@@ -33,7 +35,8 @@ public class Player : MonoBehaviour {
 		Application.targetFrameRate = 60;
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		bloodSplatter = GameObject.Find("BloodSplatterPivot");
-		spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
+		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+		//spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
 		fingerSprite = GameObject.Find("FingerSprite");
 		noPowerup = GameObject.Find("NoPowerUp").GetComponent<Transform>();
 		powerupIndicator = noPowerup;
@@ -51,7 +54,7 @@ public class Player : MonoBehaviour {
 		effect4.transform.position = fingerSprite.transform.position;
                       
 		if (hitPoints == 1){
-			spawner.isAllowedToSpawn = true;          
+			//spawner.isAllowedToSpawn = true;          
             powerupIndicator.position = new Vector3(100, 0, 0);
 			if (powerupIndicator.parent != null){
 				//spawner.isAllowedToSpawn = false;
@@ -59,7 +62,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 		else {
-			spawner.isAllowedToSpawn = false;
+			//spawner.isAllowedToSpawn = false;
 			powerupIndicator.position = fingerSprite.transform.position;
             powerupIndicator.parent = fingerSprite.transform;
 		}
@@ -78,7 +81,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void FingerTarget(){
-		if (Input.touchCount > 0 && (roundManager.currentRound == round.Playing || roundManager.currentRound == round.Holding)) {
+		if (Input.touchCount > 0 && roundManager.currentState == State.Active) {
             //transform.position = Camera.main.ScreenToWorldPoint (Input.GetTouch (0).position);
             start = transform.position;
             end = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
@@ -93,9 +96,10 @@ public class Player : MonoBehaviour {
             hitPoints--;
             if (hitPoints == 0)
             {
-                roundManager.isDead = true;
+				roundManager.KillPlayer();
                 Instantiate(bloodSplatter, transform.position, Quaternion.identity);
                 TapticManager.Notification(NotificationFeedback.Error);
+				audioManager.DeadAudio();
             }
         }    
     }

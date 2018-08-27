@@ -18,7 +18,7 @@ public class Katana : Weapon {
 	// Update is called once per frame
 	void Update () {
 		speed = waveManager.speed;
-		if (roundManager.currentRound == round.Playing && state == State.active){
+		if (roundManager.currentState == global::State.Active && state == State.active){
 			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
 		}
 	}

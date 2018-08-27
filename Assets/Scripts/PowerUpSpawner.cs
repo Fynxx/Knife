@@ -19,8 +19,8 @@ public class PowerUpSpawner : MonoBehaviour {
 
 	public PowerUp powerUp;
 
-    private int width;
-    private int height;
+    //private int width;
+    //private int height;
     public int powerUpCounter;
     public int powerUpMultiplier;
     
@@ -33,8 +33,8 @@ public class PowerUpSpawner : MonoBehaviour {
 
 	private void Awake()
 	{
-        width = Screen.width;
-        height = Screen.height;
+        //width = Screen.width;
+        //height = Screen.height;
 
         oneTenthHeight = Screen.height / 10;
         oneSixthWidth = Screen.width / 6;

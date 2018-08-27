@@ -27,11 +27,14 @@ public class WaveManager : MonoBehaviour
 	public RoundManager roundManager;
 	public Player player;
 	public Waves waves;
+	public AudioManager audioManager;
 
 	public Vector3[] waveLocations;
 
 	public int pooledAmount = 5;
 	public int waveLength;
+
+	public float hardReset;
 
 	public float speed;
 	public const float initialSpeed = 5;
@@ -40,10 +43,14 @@ public class WaveManager : MonoBehaviour
 	float ranY;
 	public List<Shuriken> starsOnField;
 
+	public int weaponThreshold;
+	public int katanaThreshold;
+
 	void Start()
 	{
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
+		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 		waves = GetComponent<Waves>();
 		waveIsOver = true;
 		waves.amountStars = pooledAmount;
@@ -58,6 +65,9 @@ public class WaveManager : MonoBehaviour
 		}
 		wallStartLocation = initialWallStartLocation;
 		speed = initialSpeed;
+		hardReset = 4f;
+		weaponThreshold = 5;
+		katanaThreshold = 5;
 	}
 
 	void Update()
@@ -67,29 +77,33 @@ public class WaveManager : MonoBehaviour
 
 	void WeaponSwitcher()
 	{
-		if (roundManager.currentRound == round.Playing)
+		if (roundManager.activeState == RoundManager.ActiveState.Playing)
 		{
 			switch (currentStep)
 			{
-				case step.ChooseWeapon:
+                case step.ChooseWeapon:
 					int ran = Random.Range(0, 10);
-					if (ran < 5)
+					wallStartLocation = initialWallStartLocation;
+					if (ran < weaponThreshold)
 					{
+						weaponThreshold = weaponThreshold - 2;
 						currentStep = step.ChooseKatanaSide;
 					}
 					else
 					{
+						weaponThreshold = weaponThreshold + 2;
 						currentStep = step.SetShurikenWave;
 					}
 					break;
 				case step.ChooseKatanaSide:
 					int side = Random.Range(0, 10);
-					if (side < 5)
+					if (side < katanaThreshold)
 					{
 						katanaLeft = true;
 						katana.transform.localScale = new Vector3(-1, 1, 1);
 						katana.transform.position = new Vector3(-1.5f, 7, 0);
 						katana.state = Katana.State.active;
+						katanaThreshold = katanaThreshold - 2;
 						currentStep = step.FireKatana;
 					}
 					else
@@ -98,6 +112,7 @@ public class WaveManager : MonoBehaviour
 						katana.transform.localScale = new Vector3(1, 1, 1);
 						katana.transform.position = new Vector3(1.5f, 7, 0);
 						katana.state = Katana.State.active;
+						katanaThreshold = katanaThreshold + 2;
 						currentStep = step.FireKatana;
 					}
 					break;
@@ -108,23 +123,27 @@ public class WaveManager : MonoBehaviour
 				case step.FireKatana:
 					if (katana.state == Katana.State.inactive)
 					{
-						currentStep = step.AddScore;
+						currentStep = step.Reset;
 					}
 					break;
 				case step.FireShuriken:
-					//if (!stars[pooledAmount-1].gameObject.activeSelf)
-					//{
-					//	currentStep = step.AddScore;
-					//}
-
 					if (starsOnField.Count == 0){
+						currentStep = step.Reset;
+					}
+					//if (shurikenParent.transform.position.y < scoreLine.transform.position.y){
+                    //  currentStep = step.AddScore;
+                    //}
+					break;
+				case step.Reset:
+					if (roundManager.activeState == RoundManager.ActiveState.Holding){
+						currentStep = step.ChooseWeapon;
+					} else {
 						currentStep = step.AddScore;
 					}
 					break;
 				case step.AddScore:
-					AddToScore(1);
-					wallStartLocation = initialWallStartLocation;
-					currentStep = step.Reset;
+					AddToScore(1);               
+					currentStep = step.ChooseWeapon;
 					break;
 				default:
 					currentStep = step.ChooseWeapon;
@@ -154,6 +173,9 @@ public class WaveManager : MonoBehaviour
 			stars[i].transform.position = new Vector3(0, 0, 0);
 			stars[i].gameObject.SetActive(false);
 		}
+    }
+
+    public void ResetSpeed(){
 		speed = initialSpeed;
 	}
 
@@ -161,10 +183,7 @@ public class WaveManager : MonoBehaviour
 	{
 		roundManager.score = roundManager.score + (amount * player.multiplier);
 		speed = speed + (player.multiplier * .05f);
-	}
-
-	public void AddXP(){
-		roundManager.totalXP = roundManager.totalXP + (roundManager.score * 100);
+		audioManager.WaveClear();
 	}
 
 	void SetWave()
@@ -190,6 +209,13 @@ public class WaveManager : MonoBehaviour
 		}
 		katana.gameObject.SetActive(false);
 	}
+
+	//public void HardReset(){
+	//	hardReset -= Time.deltaTime;
+	//	if (hardReset < 0){
+	//		currentStep = step.Reset;
+	//	}
+	//}
 }
 
 

@@ -18,7 +18,7 @@ public class ColorChanger : MonoBehaviour {
     
     void Update()
     {
-		if (rm.currentRound == round.Playing){
+		if (rm.currentState == State.Active){
 			background.GetComponent<Renderer>().material.color = white;
 		} else {
 			background.GetComponent<Renderer>().material.color = black;

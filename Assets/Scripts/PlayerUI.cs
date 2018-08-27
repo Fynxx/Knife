@@ -19,12 +19,12 @@ public class PlayerUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (roundManager.currentRound == round.Holding)
+		if (roundManager.activeState == RoundManager.ActiveState.Holding)
 		{
 			holdingBar.gameObject.SetActive(true);
             holdingTime = roundManager.holdTimer;
             holdingBar.fillAmount = holdingTime;
-		} else if (roundManager.currentRound == round.Playing){
+		} else if (roundManager.currentState == State.Active){
 			holdingBar.gameObject.SetActive(false);
 		}      
 	}

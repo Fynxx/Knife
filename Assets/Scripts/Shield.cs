@@ -33,7 +33,7 @@ public class Shield : PowerUp
 	{
 		shieldPickupBar.fillAmount = pickupTimer;
 		//print(spawner.currentState);
-		if (roundManager.currentRound == round.Playing)
+		if (roundManager.currentState == State.Active)
         {
             if (lifeTime > 0)
             {
@@ -42,7 +42,7 @@ public class Shield : PowerUp
             }
             else if (lifeTime < 0)
             {
-				spawner.isAlive = false;
+				//spawner.isAlive = false;
 				Die(shield);
             }
         }
@@ -57,7 +57,7 @@ public class Shield : PowerUp
 
 			if (pickupTimer < 0 )//|| Input.GetTouch(0).pressure > 5
             {
-				spawner.isAlive = false;
+				//spawner.isAlive = false;
 				player.hitPoints = 2;
 				player.powerupIndicator = GOShield.transform;
 				//spawner.isAllowedToSpawn = true;
