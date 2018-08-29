@@ -37,8 +37,8 @@ public class Shuriken : Weapon {
 
 	void OnBecameInvisible()
     {
-		gameObject.SetActive(false);
 		waveManager.starsOnField.Remove(this);
+        gameObject.SetActive(false);
 		//state = State.inactive;
     }   
 

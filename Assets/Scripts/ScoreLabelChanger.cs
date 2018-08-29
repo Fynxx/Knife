@@ -8,6 +8,7 @@ public class ScoreLabelChanger : MonoBehaviour {
 	public Player player;
 	public RoundManager roundManager;
 
+	public Vector3 location0;
 	public Vector3 location1;
 	public Vector3 location2;
 	public Vector3 location3;
@@ -25,6 +26,7 @@ public class ScoreLabelChanger : MonoBehaviour {
 	void Update () {
 		if (roundManager.currentState == State.Active)
 		{
+			//transform.gameObject.SetActive(true);
 			switch (player.multiplier)
 			{
 				case 1:
@@ -47,7 +49,8 @@ public class ScoreLabelChanger : MonoBehaviour {
 					break;
 			}
 		} else {
-			transform.position = location1;
+			transform.position = location0;
+			//transform.gameObject.SetActive(false);
             two.gameObject.SetActive(false);
             four.gameObject.SetActive(false);
 		}

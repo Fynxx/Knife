@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public Text scoreLabelPlayRight;
     public Text scoreLabelEnded;
 	public Text scoreLabelCont;
+	public Text scoreLabelScreenshot;
     public Text highScoreLabelFresh;
     //public Text highScoreLabelEnded;
 	public Text highScoreLabelMenu;
@@ -32,6 +33,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup settings;
 	public CanvasGroup pause;
 	public CanvasGroup cont;
+	public CanvasGroup screen;
     //public CanvasGroup hold;
 
     public Canvas menu;
@@ -58,6 +60,7 @@ public class UIManager : MonoBehaviour
         //scoreLabelPlayRight = GameObject.Find("ScoreLabelPlayRight").GetComponent<Text>();
         scoreLabelEnded = GameObject.Find("ScoreLabelEnded").GetComponent<Text>();
 		scoreLabelCont = GameObject.Find("ScoreLabelCont").GetComponent<Text>();
+		scoreLabelScreenshot = GameObject.Find("ScoreLabelScreenshot").GetComponent<Text>();
         highScoreLabelFresh = GameObject.Find("HighScoreLabelFresh").GetComponent<Text>();
         //highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
@@ -74,6 +77,7 @@ public class UIManager : MonoBehaviour
         ended = GameObject.Find("RoundEnded").GetComponent<CanvasGroup>();
 		pause = GameObject.Find("RoundPause").GetComponent<CanvasGroup>();
 		cont = GameObject.Find("RoundContinue").GetComponent<CanvasGroup>();
+		screen = GameObject.Find("RoundScreenshot").GetComponent<CanvasGroup>();
         //hold = GameObject.Find("RoundHold").GetComponent<CanvasGroup>();
         //settings = GameObject.Find("GameSettings").GetComponent<CanvasGroup>();
 
@@ -115,6 +119,7 @@ public class UIManager : MonoBehaviour
         //scoreLabelPlayRight.text = roundManager.score.ToString();//C# tostring formatting
         scoreLabelEnded.text = roundManager.score.ToString();//C# tostring formatting
 		scoreLabelCont.text = roundManager.score.ToString();//C# tostring formatting
+		scoreLabelScreenshot.text = roundManager.score.ToString();//C# tostring formatting
 		highScoreLabelFresh.text = roundManager.highscore.ToString();
 		//xp.text = roundManager.totalXP.ToString();
 		//highScoreLabelEnded.text = roundManager.highscore.ToString();
@@ -133,56 +138,71 @@ public class UIManager : MonoBehaviour
 			case State.Active:
 				panel.SetActive(true);
 				player.SetActive(true);
-				playing.alpha = 1;
-				start.alpha = 0;
-                ended.alpha = 0;
-                pause.alpha = 0;  
-				cont.alpha = 0;
+				playing.gameObject.SetActive(true);
+				start.gameObject.SetActive(false);
+				ended.gameObject.SetActive(false);
+				pause.gameObject.SetActive(false);            
+			    cont.gameObject.SetActive(false);
 				if (roundManager.activeState == RoundManager.ActiveState.Holding){
 					
 				}
 				if (roundManager.activeState == RoundManager.ActiveState.Playing)
                 {
-					playing.alpha = 1;
+					playing.gameObject.SetActive(true);
                 }
 				break;
            
             case State.Inactive:
 				panel.SetActive(false);
-                player.SetActive(false);
-                playing.alpha = 0;
+				playing.gameObject.SetActive(false);
                 if (roundManager.inactiveState == RoundManager.InactiveState.Start)
                 {
 					lowerLabel.text = lowerMessages[0];
-					start.alpha = 1;
-					ended.alpha = 0;
-					pause.alpha = 0;
-					cont.alpha = 0;
+					start.gameObject.SetActive(true);
+                    ended.gameObject.SetActive(false);
+                    pause.gameObject.SetActive(false);
+                    cont.gameObject.SetActive(false);
+					screen.gameObject.SetActive(false);
+					player.SetActive(false);
                 }
                 if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
 					lowerLabel.text = lowerMessages[2];
-					start.alpha = 0;
-					ended.alpha = 1;
-                    pause.alpha = 0;               
-					cont.alpha = 0;
+					start.gameObject.SetActive(false);
+                    ended.gameObject.SetActive(true);
+                    pause.gameObject.SetActive(false);
+                    cont.gameObject.SetActive(false);
+					screen.gameObject.SetActive(false);
+					player.SetActive(false);
                 }
 
                 if (roundManager.inactiveState == RoundManager.InactiveState.Paused)
                 {
-					start.alpha = 0;
-                    ended.alpha = 0;
-                    pause.alpha = 1;    
-					cont.alpha = 0;
+					start.gameObject.SetActive(false);
+                    ended.gameObject.SetActive(false);
+					pause.gameObject.SetActive(true);
+                    cont.gameObject.SetActive(false);
+					screen.gameObject.SetActive(false);
+					player.SetActive(false);
                 }
 
 				if (roundManager.inactiveState == RoundManager.InactiveState.Continue)
                 {
-                    start.alpha = 0;
-                    ended.alpha = 0;
-                    pause.alpha = 0;
-					cont.alpha = 1;
+					start.gameObject.SetActive(false);
+                    ended.gameObject.SetActive(false);
+                    pause.gameObject.SetActive(false);
+                    cont.gameObject.SetActive(true);
+					screen.gameObject.SetActive(false);
+					player.SetActive(false);
                 }
-                
+				if (roundManager.inactiveState == RoundManager.InactiveState.Screenshot)
+                {
+                    start.gameObject.SetActive(false);
+                    ended.gameObject.SetActive(false);
+                    pause.gameObject.SetActive(false);
+					cont.gameObject.SetActive(false);
+					screen.gameObject.SetActive(true);
+					player.SetActive(true);
+                }
                 //settings.alpha = 0;
                 raycastBlockerAd.SetActive(false);
                 break;

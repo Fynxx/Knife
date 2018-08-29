@@ -5,11 +5,11 @@ using UnityEngine.UI;
 using UnityEngine.Advertisements;
 using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using TapticPlugin;
-using UnityEngine.EventSystems;
 
 public enum State { Active, Inactive };
 
@@ -17,10 +17,10 @@ public class RoundManager : MonoBehaviour {
 
 	public State currentState;
 
-    public enum ActiveState { Reset, Playing, Holding, Dieing, Continue };
+    public enum ActiveState { Reset, Playing, Holding, Dieing, Continue, Screenshot };
     public ActiveState activeState;
 
-    public enum InactiveState { Start, Paused, Dead, Ended, Continue };
+    public enum InactiveState { Start, Paused, Dead, Ended, Continue, Screenshot };
     public InactiveState inactiveState;
 
     public StateManager stateManager;
@@ -28,6 +28,7 @@ public class RoundManager : MonoBehaviour {
 	public Multiplier multiplier;
 	public WaveManager waveManager;
 	public AudioManager audioManager;
+	public Screenshot screenshot;
 	//public enum danger {None, Knife, Shuriken, Grater};
 	//public danger currentDanger;
 
@@ -73,6 +74,7 @@ public class RoundManager : MonoBehaviour {
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 		waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
 		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+		screenshot = GetComponent<Screenshot>();
 		//_nextDangerShot = _nextDangerResetValue;
 		Load ();
 		adMultiplier = 5;
@@ -185,25 +187,35 @@ public class RoundManager : MonoBehaviour {
                     break;
 				case InactiveState.Ended:
 					break;
-				case InactiveState.Dead:
-					KillPlayer();
-					if (score > highscore)
+				case InactiveState.Screenshot:
+					//screenshot.TakeScreenshot();
+					//active- and inactive state are set back in screenshot.cs
+
+                    //activeState = ActiveState.Dieing;
+                    //inactiveState = InactiveState.Dead;
+                    break;
+                case InactiveState.Dead:
+                    //KillPlayer(); 
+                    if (score > highscore)
                     {
                         highscore = score;
                         Save();
-                    }
-					break;
-				default:
-					break;
-			}
-		}      
-	}
+						screenshot.highscore = true;
+					} else {
+						screenshot.highscore = false;
+					}
+                    break;
+                default:
+                    break;
+            }
+        }      
+    }
 
-	public void KillPlayer(){
+    public void KillPlayer(){
         multiplierWhenDied = player.multiplier;
         currentState = State.Inactive;
-        activeState = ActiveState.Dieing;
-        inactiveState = InactiveState.Dead;
+		activeState = ActiveState.Dieing;
+		inactiveState = InactiveState.Dead;
 	}
 
 	public void ResetGame(){
@@ -213,7 +225,7 @@ public class RoundManager : MonoBehaviour {
             { "time_elapsed", Time.timeSinceLevelLoad },
             { "times_played", timesPlayed},
             { "multiplier_when_died", multiplierWhenDied}
-        });
+        });      
         player.hitPoints = 1;
         //multiplier.countDown = 0;
         //multiplier.coins = 0;

@@ -25,6 +25,7 @@ public class WatchAd : MonoBehaviour {
 				roundManager.activeState = RoundManager.ActiveState.Continue;
 				roundManager.inactiveState = RoundManager.InactiveState.Continue;
 				roundManager.adShown = true;
+				roundManager.waveManager.ResetField();
                 break;
             case ShowResult.Skipped:
                 Debug.Log("The ad was skipped before reaching the end.");
