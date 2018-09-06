@@ -44,7 +44,7 @@ public class Screenshot : MonoBehaviour
 		ShareTextSelector();
 
 		new NativeShare().AddFile(filePath).SetText(shareText).Share();
-		print(shareText); 
+		//print(shareText); 
 		roundManager.activeState = RoundManager.ActiveState.Dieing;
 		roundManager.inactiveState = RoundManager.InactiveState.Dead;
 	}

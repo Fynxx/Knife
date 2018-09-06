@@ -28,11 +28,16 @@ public class WaveManager : MonoBehaviour
 	public Player player;
 	public Waves waves;
 	public AudioManager audioManager;
+	public AudioSource audioSource;
+	public AudioClip addScoreAudio;
 
 	public Vector3[] waveLocations;
 
 	public int pooledAmount = 5;
 	public int waveLength;
+
+	public int wavesAmount;
+	public int nextPanel = 5;
 
 	public float hardReset;
 
@@ -51,6 +56,7 @@ public class WaveManager : MonoBehaviour
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
 		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+		audioSource = GetComponent<AudioSource>();
 		waves = GetComponent<Waves>();
 		waveIsOver = true;
 		waves.amountStars = pooledAmount;
@@ -142,7 +148,8 @@ public class WaveManager : MonoBehaviour
 					}
 					break;
 				case step.AddScore:
-					AddToScore(1);               
+					AddToScore(1);      
+					wavesAmount++;
 					currentStep = step.ChooseWeapon;
 					break;
 				default:
@@ -155,13 +162,16 @@ public class WaveManager : MonoBehaviour
 	public void SetShurikenWall(){
 		for (int i = 0; i < pooledAmount; i++)
         {
-			ranY = Random.Range(6f, 10f);
+			ranY = Random.Range(6f, 8f);
             currentStar = stars[i];
 			currentStar.transform.position = new Vector3(wallStartLocation, ranY, 0);
             currentStar.gameObject.SetActive(true);         
             wallStartLocation = wallStartLocation + 0.9f;
 			starsOnField.Add(currentStar);
         }
+		int ran = Random.Range(0, 5);
+        stars[ran].gameObject.SetActive(false);
+		starsOnField.Remove(starsOnField[ran]);
 	}
 
 	public void ResetField()
@@ -173,6 +183,7 @@ public class WaveManager : MonoBehaviour
 			stars[i].transform.position = new Vector3(0, 0, 0);
 			stars[i].gameObject.SetActive(false);
 		}
+		starsOnField.Clear();
     }
 
     public void ResetSpeed(){
@@ -183,7 +194,9 @@ public class WaveManager : MonoBehaviour
 	{
 		roundManager.score = roundManager.score + (amount * player.multiplier);
 		speed = speed + (player.multiplier * .05f);
-		audioManager.WaveClear();
+        float ran = Random.Range(1f, 1.5f);
+        audioSource.pitch = ran;
+		audioSource.PlayOneShot(addScoreAudio);
 	}
 
 	void SetWave()
@@ -196,7 +209,7 @@ public class WaveManager : MonoBehaviour
 				stars[i].transform.position = waveLocations[i];
 				currentStar.gameObject.SetActive(true);
 			}
-		}
+        }      
 	}
 
 

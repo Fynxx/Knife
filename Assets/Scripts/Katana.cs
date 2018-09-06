@@ -7,11 +7,15 @@ public class Katana : Weapon {
 	public enum State { inactive, active };
 	public State state;
 
+	public AudioSource audioSource;
+    public AudioClip whoosh;
+
 	// Use this for initialization
 	void Start () {
 		//state = State.active;
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
+		audioSource = GetComponent<AudioSource>();
 		speed = waveManager.speed;
 	}
 	
@@ -21,6 +25,13 @@ public class Katana : Weapon {
 		if (roundManager.currentState == global::State.Active && state == State.active){
 			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
 		}
+	}
+
+	void OnBecameVisible()
+	{
+		float ran = Random.Range(1f, 1.5f);
+        audioSource.pitch = ran;
+		audioSource.PlayOneShot(whoosh);
 	}
 
 	void OnBecameInvisible()

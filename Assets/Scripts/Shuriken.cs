@@ -11,11 +11,15 @@ public class Shuriken : Weapon {
 	public GameObject player;
 	float ran;
 
-	void Start () {    
-		player = GameObject.Find("FingerTarget");
-		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
+	public AudioSource audioSource;
+	public AudioClip whoosh;
+
+    void Start () {    
+        player = GameObject.Find("FingerTarget");
+        roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
         waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
-		ran = Random.Range(-.5f, .5f);
+		audioSource = GetComponent<AudioSource>();
+        ran = Random.Range(-.5f, .5f);
 	}
 
 	void Update()
@@ -34,7 +38,13 @@ public class Shuriken : Weapon {
 			transform.Rotate (Vector3.back, Time.deltaTime * 1500);
 		}
 	}
-
+	void OnBecameVisible()
+	{
+		float ran = Random.Range(1f, 1.5f);
+		audioSource.pitch = ran;
+		audioSource.PlayOneShot(whoosh);
+	}
+    
 	void OnBecameInvisible()
     {
 		waveManager.starsOnField.Remove(this);

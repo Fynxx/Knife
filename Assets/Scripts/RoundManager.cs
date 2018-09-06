@@ -10,6 +10,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using TapticPlugin;
+using PaperPlaneTools;
 
 public enum State { Active, Inactive };
 
@@ -29,6 +30,7 @@ public class RoundManager : MonoBehaviour {
 	public WaveManager waveManager;
 	public AudioManager audioManager;
 	public Screenshot screenshot;
+	public Panels panelManager;
 	//public enum danger {None, Knife, Shuriken, Grater};
 	//public danger currentDanger;
 
@@ -44,6 +46,7 @@ public class RoundManager : MonoBehaviour {
 	public int timesPlayed;
 	//public int hitPoints;
 	public int multiplierWhenDied;
+	public int panelsUnlocked;
 
 	public Text scoreLabel;
 	public bool isDead;
@@ -54,6 +57,12 @@ public class RoundManager : MonoBehaviour {
 
 	public bool showAdButton;
 	public bool adShown;
+
+	public bool adWatched;
+	public bool shared;
+	bool reviewShown;
+
+	public bool initialReset;
     
 	//public ShurikenSpawner dangerSpawner;
 	//public PeakNShoot peakNShoot;
@@ -66,6 +75,7 @@ public class RoundManager : MonoBehaviour {
 	void Start () {
         //scoreLabel = GameObject.Find ("ScoreLabel").GetComponent<Text> ();
 		isDead = false;
+		reviewShown = false;
 		//currentDanger = danger.None;
 		currentState = State.Inactive;
 		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
@@ -75,16 +85,20 @@ public class RoundManager : MonoBehaviour {
 		waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
 		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 		screenshot = GetComponent<Screenshot>();
+		panelManager = GameObject.Find("PanelManager").GetComponent<Panels>();
 		//_nextDangerShot = _nextDangerResetValue;
-		Load ();
+        Load ();
+		panelManager.highscore = highscore;
+		panelManager.CheckUnlockedPanels();
 		adMultiplier = 5;
+		//InitialReset();
 		//thisScene = SceneManager.GetActiveScene();
 	}
 	
 	void Update () {
 		ChangeState ();
         States();
-		WatchAd();
+		ShowAdButton();
 		//		DangerSwitcher ();
 	}
 
@@ -109,7 +123,6 @@ public class RoundManager : MonoBehaviour {
 								if (!IsPointerOverUIObject())
 								{
     								TapticManager.Impact(ImpactFeedback.Light);
-    								audioManager.ButtonPressAudio();
 									if (inactiveState == InactiveState.Paused || inactiveState == InactiveState.Continue)
     								{
     									currentState = State.Active;
@@ -126,7 +139,7 @@ public class RoundManager : MonoBehaviour {
 							case TouchPhase.Stationary:
 								break;
 							case TouchPhase.Ended:
-								currentState = State.Inactive;
+								currentState = State.Inactive;                        
 								break;
 							default:
 								//currentState = State.Fresh;
@@ -195,15 +208,23 @@ public class RoundManager : MonoBehaviour {
                     //inactiveState = InactiveState.Dead;
                     break;
                 case InactiveState.Dead:
-                    //KillPlayer(); 
+					//KillPlayer(); 
                     if (score > highscore)
                     {
                         highscore = score;
                         Save();
-						screenshot.highscore = true;
-					} else {
-						screenshot.highscore = false;
-					}
+						if (!reviewShown)
+						{
+							panelManager.CheckUnlockedPanels();
+                            RateBox.Instance.Show();
+                            print("review shown");
+                            reviewShown = true;
+                        }
+                        screenshot.highscore = true;
+                    } else {
+						panelManager.CheckUnlockedPanels();
+                        screenshot.highscore = false;
+                    }
                     break;
                 default:
                     break;
@@ -214,18 +235,21 @@ public class RoundManager : MonoBehaviour {
     public void KillPlayer(){
         multiplierWhenDied = player.multiplier;
         currentState = State.Inactive;
-		activeState = ActiveState.Dieing;
-		inactiveState = InactiveState.Dead;
+        activeState = ActiveState.Dieing;
+        inactiveState = InactiveState.Dead;
 	}
 
 	public void ResetGame(){
-		AnalyticsEvent.Custom("new_round", new Dictionary<string, object>
+		AnalyticsEvent.Custom("ad", new Dictionary<string, object>
         {
-            { "current_score", score },
-            { "time_elapsed", Time.timeSinceLevelLoad },
-            { "times_played", timesPlayed},
-            { "multiplier_when_died", multiplierWhenDied}
-        });      
+			{ "ad_watched", adWatched }
+        });
+        adWatched = false;
+		AnalyticsEvent.Custom("share", new Dictionary<string, object>
+        {
+            { "shared", shared }
+        });
+        shared = false;
         player.hitPoints = 1;
         //multiplier.countDown = 0;
         //multiplier.coins = 0;
@@ -239,6 +263,7 @@ public class RoundManager : MonoBehaviour {
             waveManager.ResetField();
         }
         timesPlayed++;
+		reviewShown = false;
 		activeState = ActiveState.Holding;
         waveManager.currentStep = WaveManager.step.ChooseWeapon;
     }
@@ -248,6 +273,7 @@ public class RoundManager : MonoBehaviour {
 		pauseTimer = 10f;
 		adShown = false;
 		waveManager.ResetSpeed();
+
 	}
 
 	public void Holding(ActiveState nextState){
@@ -266,7 +292,7 @@ public class RoundManager : MonoBehaviour {
 		inactiveState = InactiveState.Start;
 	}
 
-	public void WatchAd(){
+	public void ShowAdButton(){
 		if (score > 10 && !adShown){
 			showAdButton = true;
 		} else {
@@ -294,58 +320,94 @@ public class RoundManager : MonoBehaviour {
  //       }
 	//}
 
+	//void InitialReset(){
+	//	initialReset = data.initialReset;
+
+ //       if (!initialReset){
+ //           Reset();
+
+	//		BinaryFormatter bf = new BinaryFormatter();
+ //           FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
+
+ //           data = new PlayerData();
+	//		data.initialReset = true;
+	//		print("Initial Reset successfull.");
+ //           bf.Serialize(file, data);
+ //           file.Close();
+	//	}
+	//}
+
 	public void Save(){
 		BinaryFormatter bf = new BinaryFormatter ();
 		FileStream file = File.Create (Application.persistentDataPath + "/playerInfo.dat");
 
 		data = new PlayerData ();
         data.score = highscore;
+		data.panelsUnlocked = panelsUnlocked;
 
 		bf.Serialize (file, data);
 		file.Close ();
+		print("Game Saved.");
 	}
 
 	public void Load(){
-		if (File.Exists (Application.persistentDataPath + "/playerInfo.dat")) {
-			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file = File.Open (Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-			PlayerData data = (PlayerData)bf.Deserialize (file);
+		if (File.Exists(Application.persistentDataPath + "/playerInfo.dat"))
+		{
+			BinaryFormatter bf = new BinaryFormatter();
+			FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
+			PlayerData data = (PlayerData)bf.Deserialize(file);
 			file.Close();
 
-            highscore = data.score;
-		}
-	}
+			highscore = data.score;
+			panelsUnlocked = data.panelsUnlocked;
+			print("Game Loaded.");
+        }
+    }
 
-	public void Reset(){
-		if (File.Exists (Application.persistentDataPath + "/playerInfo.dat")) {
-			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file = File.Open (Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-			PlayerData data = (PlayerData)bf.Deserialize (file);
+    public void Reset(){
+		BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
 
-			data.score = 0;
-            highscore = 0;
-			data.xp = 0;
-			bf.Serialize (file, data);
-			file.Close ();
-		}
-	}
+        data = new PlayerData();
+        data.score = 0;
+		highscore = 0;
+		data.xp = 0;
+		panelsUnlocked = 0;
+		data.panelsUnlocked = 0;
+
+        bf.Serialize(file, data);
+        file.Close();
+        print("Game Reset.");
+		SceneManager.LoadScene(0, LoadSceneMode.Single);
+
+	}   
 
 	private void OnApplicationQuit()
 	{
-		AnalyticsEvent.Custom("times_played", new Dictionary<string, object>
+		AnalyticsEvent.Custom("close_game", new Dictionary<string, object>
                 {
-                    { "times_played", timesPlayed }
+                    { "times_played", timesPlayed },
+			        { "highscore", highscore }
                 });
 	}
 
 	private void OnApplicationPause()
 	{
-		AnalyticsEvent.Custom("times_played", new Dictionary<string, object>
+		AnalyticsEvent.Custom("close_game", new Dictionary<string, object>
                 {
-                    { "times_played", timesPlayed }
+                    { "times_played", timesPlayed },
+                    { "highscore", highscore }
                 });
 		timesPlayed = 0;
 	}   
+
+	public void AdWatched(){
+		adWatched = true;
+	}
+   
+	public void Shared(){
+		shared = true;
+	}
 
 }
 
@@ -354,4 +416,6 @@ class PlayerData
 {
 	public int score;
 	public int xp;
+	public int panelsUnlocked;
+	public bool initialReset;   
 }

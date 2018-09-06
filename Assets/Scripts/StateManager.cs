@@ -16,6 +16,9 @@ public class StateManager : MonoBehaviour {
 	void Update () 
     {
         StateSwitcher();
+		#if UNITY_ANDROID
+		BackButton();      
+#endif
 	}
 
     void StateSwitcher()
@@ -51,4 +54,13 @@ public class StateManager : MonoBehaviour {
     {
         currentState = state.Settings;
     }
+	#if UNITY_ANDROID
+    void BackButton()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            ToMenu();
+        }
+    }
+	#endif
 }

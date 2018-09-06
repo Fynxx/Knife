@@ -5,28 +5,25 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour {
     
 	public AudioSource audioSource;
-	public AudioClip nextClip;
-	public AudioClip buttonPress;
-	public AudioClip dead;
-	public AudioClip waveClear;
+    public AudioClip menuProgress;
+    public AudioClip menuBack;
 
 	// Use this for initialization
 	void Start () {
 		audioSource = GetComponent<AudioSource>();
 	}
-
-	public void ButtonPressAudio(){
-		nextClip = buttonPress;
-		audioSource.PlayOneShot(nextClip);
-	}
-
-	public void DeadAudio(){
-		nextClip = dead;
-        audioSource.PlayOneShot(nextClip);
-	}
-
-	public void WaveClear(){
-		nextClip = waveClear;
-        audioSource.PlayOneShot(nextClip); 
-	}
+    
+    public void MenuProgress(){
+        float ran = Random.Range(1f, 1.5f);
+        audioSource.pitch = ran;
+        audioSource.PlayOneShot(menuProgress);
+    }
+    
+    public void MenuBack()
+    {
+        float ran = Random.Range(1f, 1.5f);
+        audioSource.pitch = ran;
+        audioSource.PlayOneShot(menuBack);
+    }
+    
 }

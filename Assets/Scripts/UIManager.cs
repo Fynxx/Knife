@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {   
     public Text scoreLabelPlayLeft;
+	public Text multiplierLabel;
     public Text scoreLabelPlayRight;
     public Text scoreLabelEnded;
 	public Text scoreLabelCont;
@@ -14,6 +15,8 @@ public class UIManager : MonoBehaviour
     //public Text highScoreLabelEnded;
 	public Text highScoreLabelMenu;
     public Text lowerLabel;
+	public Text pagesUnlockedFresh;
+	public Text pagesUnlockedEnded;
 	//public Text xp;
 
     public Image dangerNorth;
@@ -24,17 +27,19 @@ public class UIManager : MonoBehaviour
 	public Image pauseTimerBar;
 	public Text pauseTimerLabel;
 
-	public Slider multiplierBar;
+
+    public Slider multiplierBar;
        
     public string[] lowerMessages;
     public CanvasGroup start;
     public CanvasGroup playing;
     public CanvasGroup ended;
     public CanvasGroup settings;
-	public CanvasGroup pause;
-	public CanvasGroup cont;
-	public CanvasGroup screen;
-    //public CanvasGroup hold;
+    public CanvasGroup pause;
+    public CanvasGroup cont;
+    public CanvasGroup screen;
+	//public CanvasGroup hold;
+	public CanvasGroup resetConfirmation;
 
     public Canvas menu;
     public Canvas game;
@@ -42,21 +47,24 @@ public class UIManager : MonoBehaviour
 
     public Toggle flipUi;
 
-	public Button watchAdButton;
+	public GameObject watchAdButton;
 
     public RoundManager roundManager;
     public StateManager stateManager;
     //public ShurikenSpawner spawner;
     //public PeakNShoot peakNShoot;
     public Multiplier multiplier;
+	public Player player;
+	public Panels panelManager;
 
-    public GameObject player;
+    public GameObject fingerTarget;
     public GameObject raycastBlockerAd;
-	public GameObject panel;
+	public GameObject panels;
 
     void Start()
     {
         scoreLabelPlayLeft = GameObject.Find("ScoreLabelPlayLeft").GetComponent<Text>();
+		multiplierLabel = GameObject.Find("MultiplierLabel").GetComponent<Text>();
         //scoreLabelPlayRight = GameObject.Find("ScoreLabelPlayRight").GetComponent<Text>();
         scoreLabelEnded = GameObject.Find("ScoreLabelEnded").GetComponent<Text>();
 		scoreLabelCont = GameObject.Find("ScoreLabelCont").GetComponent<Text>();
@@ -64,6 +72,8 @@ public class UIManager : MonoBehaviour
         highScoreLabelFresh = GameObject.Find("HighScoreLabelFresh").GetComponent<Text>();
         //highScoreLabelEnded = GameObject.Find("HighScoreLabelEnded").GetComponent<Text>();
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
+		pagesUnlockedFresh = GameObject.Find("PagesUnlockedFresh").GetComponent<Text>();
+		pagesUnlockedEnded = GameObject.Find("PagesUnlockedEnded").GetComponent<Text>();
 		//lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
 		//xp = GameObject.Find("TotalXP").GetComponent<Text>();
 
@@ -87,19 +97,21 @@ public class UIManager : MonoBehaviour
 
         flipUi = GameObject.Find("FlipUiToggle").GetComponent<Toggle>();
 
-		watchAdButton = GameObject.Find("WatchAdButton").GetComponent<Button>();
+		watchAdButton = GameObject.Find("WatchAdButton");
 
         raycastBlockerAd = GameObject.Find("RaycastBlockerAdSlider");
 
         roundManager = GetComponent<RoundManager>();
         stateManager = GameObject.Find("GameManager").GetComponent<StateManager>();
+		player = GameObject.Find("FingerTarget").GetComponent<Player>();
         //spawner = GameObject.Find("ShurikenSpawner").GetComponent<ShurikenSpawner>();
 		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		multiplier = GameObject.Find("FingerTarget").GetComponent<Multiplier>();
 
-        player = GameObject.Find("FingerTarget");
+		fingerTarget = GameObject.Find("FingerTarget");
 
-		panel = GameObject.Find("Panel");
+		panels = GameObject.Find("Panels");
+		panelManager = GameObject.Find("PanelManager").GetComponent<Panels>();
 
         lowerMessages = new string[3];
         lowerMessages[0] = "Touch, Hold and Avoid the Shuriken!";
@@ -121,14 +133,14 @@ public class UIManager : MonoBehaviour
 		scoreLabelCont.text = roundManager.score.ToString();//C# tostring formatting
 		scoreLabelScreenshot.text = roundManager.score.ToString();//C# tostring formatting
 		highScoreLabelFresh.text = roundManager.highscore.ToString();
+		multiplierLabel.text = ("x" + player.multiplier.ToString());
 		//xp.text = roundManager.totalXP.ToString();
 		//highScoreLabelEnded.text = roundManager.highscore.ToString();
-		if (roundManager.highscore > 0)
-		{
-			highScoreLabelMenu.text = roundManager.highscore.ToString();
-		}
+		highScoreLabelMenu.text = roundManager.highscore.ToString();
 		pauseTimerBar.fillAmount = roundManager.pauseTimer * .1f ;
 		pauseTimerLabel.text = roundManager.pauseTimer.ToString("f");
+		pagesUnlockedFresh.text = (panelManager.UnlockedPanels.Count+ "/" +(panelManager.AllPanels.Count-1) + " pages unlocked!");
+		pagesUnlockedEnded.text = pagesUnlockedFresh.text;
     }
 
     void CanvasGroupChanger()
@@ -136,8 +148,8 @@ public class UIManager : MonoBehaviour
         switch (roundManager.currentState)
         {
 			case State.Active:
-				panel.SetActive(true);
-				player.SetActive(true);
+				panels.gameObject.SetActive(true);
+				fingerTarget.SetActive(true);
 				playing.gameObject.SetActive(true);
 				start.gameObject.SetActive(false);
 				ended.gameObject.SetActive(false);
@@ -153,7 +165,7 @@ public class UIManager : MonoBehaviour
 				break;
            
             case State.Inactive:
-				panel.SetActive(false);
+				panels.gameObject.SetActive(false);
 				playing.gameObject.SetActive(false);
                 if (roundManager.inactiveState == RoundManager.InactiveState.Start)
                 {
@@ -163,7 +175,7 @@ public class UIManager : MonoBehaviour
                     pause.gameObject.SetActive(false);
                     cont.gameObject.SetActive(false);
 					screen.gameObject.SetActive(false);
-					player.SetActive(false);
+					fingerTarget.SetActive(false);
                 }
                 if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
 					lowerLabel.text = lowerMessages[2];
@@ -172,7 +184,7 @@ public class UIManager : MonoBehaviour
                     pause.gameObject.SetActive(false);
                     cont.gameObject.SetActive(false);
 					screen.gameObject.SetActive(false);
-					player.SetActive(false);
+					fingerTarget.SetActive(false);
                 }
 
                 if (roundManager.inactiveState == RoundManager.InactiveState.Paused)
@@ -182,7 +194,7 @@ public class UIManager : MonoBehaviour
 					pause.gameObject.SetActive(true);
                     cont.gameObject.SetActive(false);
 					screen.gameObject.SetActive(false);
-					player.SetActive(false);
+					fingerTarget.SetActive(false);
                 }
 
 				if (roundManager.inactiveState == RoundManager.InactiveState.Continue)
@@ -192,7 +204,7 @@ public class UIManager : MonoBehaviour
                     pause.gameObject.SetActive(false);
                     cont.gameObject.SetActive(true);
 					screen.gameObject.SetActive(false);
-					player.SetActive(false);
+					fingerTarget.SetActive(false);
                 }
 				if (roundManager.inactiveState == RoundManager.InactiveState.Screenshot)
                 {
@@ -201,7 +213,7 @@ public class UIManager : MonoBehaviour
                     pause.gameObject.SetActive(false);
 					cont.gameObject.SetActive(false);
 					screen.gameObject.SetActive(true);
-					player.SetActive(true);
+					fingerTarget.SetActive(true);
                 }
                 //settings.alpha = 0;
                 raycastBlockerAd.SetActive(false);
@@ -261,49 +273,69 @@ public class UIManager : MonoBehaviour
 
 	void WatchAdButton(){
 		if (roundManager.showAdButton){
-			watchAdButton.gameObject.SetActive(true);
+			watchAdButton.SetActive(true);
 		} else {
-			watchAdButton.gameObject.SetActive(false);
+			watchAdButton.SetActive(false);
 		}
 	}
 
-   // void DangerIndicator()
-   // {
-   //     if (roundManager.currentRound == round.Playing)
-   //     {
-			//switch (peakNShoot.nextDirection)
-    //        {
-				//case PeakNShoot.direction.North:
-    //                dangerNorth.enabled = true;
-    //                dangerEast.enabled = false;
-    //                dangerSouth.enabled = false;
-    //                dangerWest.enabled = false;
-    //                break;
-				//case PeakNShoot.direction.East:
-    //                dangerNorth.enabled = false;
-    //                dangerEast.enabled = true;
-    //                dangerSouth.enabled = false;
-    //                dangerWest.enabled = false;
-    //                break;
-				//case PeakNShoot.direction.South:
-    //                dangerNorth.enabled = false;
-    //                dangerEast.enabled = false;
-    //                dangerSouth.enabled = true;
-    //                dangerWest.enabled = false;
-    //                break;
-				//case PeakNShoot.direction.West:
-    //                dangerNorth.enabled = false;
-    //                dangerEast.enabled = false;
-    //                dangerSouth.enabled = false;
-    //                dangerWest.enabled = true;
-    //                break;
-    //            default:
-    //                break;
-    //        }
-    //    }
-    //}
+	public void CancelAdButton()
+    {
+		roundManager.adShown = false;
+		watchAdButton.SetActive(false);
+    }
 
-    public void ScoreUiFlipper()
+	// void DangerIndicator()
+	// {
+	//     if (roundManager.currentRound == round.Playing)
+	//     {
+	//switch (peakNShoot.nextDirection)
+	//        {
+	//case PeakNShoot.direction.North:
+	//                dangerNorth.enabled = true;
+	//                dangerEast.enabled = false;
+	//                dangerSouth.enabled = false;
+	//                dangerWest.enabled = false;
+	//                break;
+	//case PeakNShoot.direction.East:
+	//                dangerNorth.enabled = false;
+	//                dangerEast.enabled = true;
+	//                dangerSouth.enabled = false;
+	//                dangerWest.enabled = false;
+	//                break;
+	//case PeakNShoot.direction.South:
+	//                dangerNorth.enabled = false;
+	//                dangerEast.enabled = false;
+	//                dangerSouth.enabled = true;
+	//                dangerWest.enabled = false;
+	//                break;
+	//case PeakNShoot.direction.West:
+	//                dangerNorth.enabled = false;
+	//                dangerEast.enabled = false;
+	//                dangerSouth.enabled = false;
+	//                dangerWest.enabled = true;
+	//                break;
+	//            default:
+	//                break;
+	//        }
+	//    }
+	//}
+
+	public void ResetConfirmation()
+	{
+		resetConfirmation.alpha = 1;
+		resetConfirmation.interactable = true;
+		resetConfirmation.blocksRaycasts = true;
+	}
+
+	public void CancelConfirmation(){
+		resetConfirmation.alpha = 0;
+		resetConfirmation.interactable = false;
+		resetConfirmation.blocksRaycasts = false;
+	}
+		
+
+	public void ScoreUiFlipper()
     {
         bool righty;
         if (flipUi.isOn)

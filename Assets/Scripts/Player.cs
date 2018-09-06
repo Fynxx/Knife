@@ -8,6 +8,8 @@ public class Player : MonoBehaviour {
 	public RoundManager roundManager;
 	public GameObject bloodSplatter;
 	public AudioManager audioManager;
+	public AudioSource audioSource;
+	public AudioClip audioDeath;
 
 	public Transform powerupIndicator;
 	public Transform noPowerup;
@@ -36,15 +38,16 @@ public class Player : MonoBehaviour {
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		bloodSplatter = GameObject.Find("BloodSplatterPivot");
 		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
-		//spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
-		fingerSprite = GameObject.Find("FingerSprite");
-		noPowerup = GameObject.Find("NoPowerUp").GetComponent<Transform>();
-		powerupIndicator = noPowerup;
-		two = Screen.height / 3;
-		four = two * 2;
-		effect2.enabled = false;
-		effect4.gameObject.SetActive(false);
-		multiplier = 1;
+		audioSource = GetComponent<AudioSource>();      
+        //spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
+        fingerSprite = GameObject.Find("FingerSprite");
+        noPowerup = GameObject.Find("NoPowerUp").GetComponent<Transform>();
+        powerupIndicator = noPowerup;
+        two = Screen.height / 3;
+        four = two * 2;
+        effect2.enabled = false;
+        effect4.gameObject.SetActive(false);
+        multiplier = 1;
 	}
 
 	void Update () {
@@ -97,9 +100,9 @@ public class Player : MonoBehaviour {
             if (hitPoints == 0)
             {
 				roundManager.KillPlayer();
+				audioSource.PlayOneShot(audioDeath);
                 Instantiate(bloodSplatter, transform.position, Quaternion.identity);
                 TapticManager.Notification(NotificationFeedback.Error);
-				audioManager.DeadAudio();
             }
         }    
     }
