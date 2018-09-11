@@ -6,8 +6,13 @@ using UnityEngine.UI;
 public class Panels : MonoBehaviour {
 
 	public WaveManager waveManager;
+	public RoundManager roundManager;
 	public int highscore;
-	public int objective;
+	public int currentObjective;
+	public int nextObjective;
+
+	public AudioSource audioSource;
+	public AudioClip audioSuccesfull;
 
 	public enum state { setup, chooseNext, check, setNext };
 	public state currentState;
@@ -28,20 +33,23 @@ public class Panels : MonoBehaviour {
 	public bool panel5unlocked;
 	public bool panelSecretUnlocked;
 
-	public const int panel2 = 20;
-	public const int panel3 = 40;
-	public const int panel4 = 90;
-	public const int panel5 = 120;
-	public const int panelSecret = 130;
+	public const int panel2 = 19;
+	public const int panel3 = 49;
+	public const int panel4 = 89;
+	public const int panel5 = 119;
+	public const int panelSecret = 129;
 
 	public Text pageNumber;
 
 	void Awake()
 	{
+		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
 		waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
 		pageNumber = GameObject.Find("Pagenumber").GetComponent<Text>();
+		audioSource = GetComponent<AudioSource>();      
 		restSpot = new Vector3(-10, 0, -9);
-		publicSpot = new Vector3(0, 0, -9);
+		publicSpot = new Vector3(0, 0, -9); 
+
 		for (int i = 1; i < AllPanels.Count; i++)
 		{
 			AllPanels[i].transform.position = restSpot;
@@ -55,12 +63,12 @@ public class Panels : MonoBehaviour {
     
     // Update is called once per frame
     void Update () {
-		highscore = waveManager.roundManager.highscore;
+		highscore = roundManager.highscore;
 
 		switch (currentState)
 		{
 			case state.setup:
-				CheckUnlockedPanels();
+				CheckUnlockedPanels();            
 				currentPanel = UnlockedPanels[0].gameObject;
                 currentPanel.transform.position = publicSpot;
 				currentState = state.chooseNext;
@@ -131,77 +139,91 @@ public class Panels : MonoBehaviour {
 
 	}
 
-	void TurnOffAllPanels(){
-		for (int i = 0; i < UnlockedPanels.Count; i++)
-		{
-			//UnlockedPanels[i].tran
+	public void UnlockNewPanel(){
+		if (roundManager.score > currentObjective){
+			roundManager.panelsUnlocked++;
+			currentObjective = nextObjective;
+			roundManager.isObjectiveCompleted = true;
+			audioSource.PlayOneShot(audioSuccesfull);
+			print("objective complete");
+		} else {
+			//show watch ad popup
 		}
 	}
     
 
 	public void CheckUnlockedPanels()
 	{
-		if (highscore > panelSecret)
-        {
-			UnlockedPanels.Clear();
-			UnlockedPanels.Add(AllPanels[0]);
-			panel1unlocked = true;
-			UnlockedPanels.Add(AllPanels[1]);
-			panel2unlocked = true;
-			UnlockedPanels.Add(AllPanels[2]);
-			panel3unlocked = true;
-			UnlockedPanels.Add(AllPanels[3]);
-			panel4unlocked = true;
-			UnlockedPanels.Add(AllPanels[4]);
-			panel5unlocked = true;
-            UnlockedPanels.Add(AllPanels[5]);
-            panelSecretUnlocked = true;
-
-		} else if (highscore > panel5)
-        {
-			UnlockedPanels.Clear();
-			UnlockedPanels.Add(AllPanels[0]);
-            panel1unlocked = true;
-            UnlockedPanels.Add(AllPanels[1]);
-            panel2unlocked = true;
-            UnlockedPanels.Add(AllPanels[2]);
-            panel3unlocked = true;
-            UnlockedPanels.Add(AllPanels[3]);
-            panel4unlocked = true;
-            UnlockedPanels.Add(AllPanels[4]);
-            panel5unlocked = true;
-		} else if (highscore > panel4)
-        {
-			UnlockedPanels.Clear();
-			UnlockedPanels.Add(AllPanels[0]);
-            panel1unlocked = true;
-            UnlockedPanels.Add(AllPanels[1]);
-            panel2unlocked = true;
-            UnlockedPanels.Add(AllPanels[2]);
-            panel3unlocked = true;
-            UnlockedPanels.Add(AllPanels[3]);
-            panel4unlocked = true;
-		} else if (highscore > panel3)
-        {
-			UnlockedPanels.Clear();
-			UnlockedPanels.Add(AllPanels[0]);
-            panel1unlocked = true;
-            UnlockedPanels.Add(AllPanels[1]);
-            panel2unlocked = true;
-            UnlockedPanels.Add(AllPanels[2]);
-            panel3unlocked = true;
-		} else if (highscore > panel2)
-        {
-			UnlockedPanels.Clear();
-			UnlockedPanels.Add(AllPanels[0]);
-            panel1unlocked = true;
-            UnlockedPanels.Add(AllPanels[1]);
-            panel2unlocked = true;
-        } else if (!panel1unlocked){
-			UnlockedPanels.Clear();
-            UnlockedPanels.Add(AllPanels[0]);
-            panel1unlocked = true;
-        }
-
+		switch (roundManager.panelsUnlocked)
+		{
+			case 5:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+                UnlockedPanels.Add(AllPanels[1]);
+                panel2unlocked = true;
+                UnlockedPanels.Add(AllPanels[2]);
+                panel3unlocked = true;
+                UnlockedPanels.Add(AllPanels[3]);
+                panel4unlocked = true;
+                UnlockedPanels.Add(AllPanels[4]);
+                panel5unlocked = true;
+                UnlockedPanels.Add(AllPanels[5]);
+                panelSecretUnlocked = true;
+				//objective = panelSecret;
+				break;
+			case 4:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+                UnlockedPanels.Add(AllPanels[1]);
+                panel2unlocked = true;
+                UnlockedPanels.Add(AllPanels[2]);
+                panel3unlocked = true;
+                UnlockedPanels.Add(AllPanels[3]);
+                panel4unlocked = true;
+                UnlockedPanels.Add(AllPanels[4]);
+                panel5unlocked = true;
+				nextObjective = panelSecret;
+                break;
+			case 3:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+                UnlockedPanels.Add(AllPanels[1]);
+                panel2unlocked = true;
+                UnlockedPanels.Add(AllPanels[2]);
+                panel3unlocked = true;
+                UnlockedPanels.Add(AllPanels[3]);
+                panel4unlocked = true;
+				nextObjective = panel5;
+                break;
+			case 2:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+                UnlockedPanels.Add(AllPanels[1]);
+                panel2unlocked = true;
+                UnlockedPanels.Add(AllPanels[2]);
+                panel3unlocked = true;
+				nextObjective = panel4;
+                break;
+			case 1:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+                UnlockedPanels.Add(AllPanels[1]);
+				nextObjective = panel3;
+				panel2unlocked = true;
+                break;
+			case 0:
+				UnlockedPanels.Clear();
+                UnlockedPanels.Add(AllPanels[0]);
+                panel1unlocked = true;
+				nextObjective = panel2;
+                break;
+			default:
+				break;
+		}
     }
 }

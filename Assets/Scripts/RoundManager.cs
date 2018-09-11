@@ -42,11 +42,13 @@ public class RoundManager : MonoBehaviour {
 	public int score;
 	public int highscore;
     public int lives;
+	public const int adMultiplierReset = 6;
 	public int adMultiplier;
 	public int timesPlayed;
 	//public int hitPoints;
 	public int multiplierWhenDied;
 	public int panelsUnlocked;
+	public int remainderUnlock;
 
 	public Text scoreLabel;
 	public bool isDead;
@@ -62,7 +64,11 @@ public class RoundManager : MonoBehaviour {
 	public bool shared;
 	bool reviewShown;
 
+	public bool isObjectiveCompleted;
+
 	public bool initialReset;
+
+	public bool gameIsSaved;
     
 	//public ShurikenSpawner dangerSpawner;
 	//public PeakNShoot peakNShoot;
@@ -90,7 +96,7 @@ public class RoundManager : MonoBehaviour {
         Load ();
 		panelManager.highscore = highscore;
 		panelManager.CheckUnlockedPanels();
-		adMultiplier = 5;
+		adMultiplier = adMultiplierReset;
 		//InitialReset();
 		//thisScene = SceneManager.GetActiveScene();
 	}
@@ -209,22 +215,38 @@ public class RoundManager : MonoBehaviour {
                     break;
                 case InactiveState.Dead:
 					//KillPlayer(); 
-                    if (score > highscore)
-                    {
-                        highscore = score;
-                        Save();
+					if (score > highscore)
+					{
+						highscore = score;
+						if (!gameIsSaved){
+							Save();
+							gameIsSaved = true;
+                        }
 						if (!reviewShown)
 						{
 							panelManager.CheckUnlockedPanels();
-                            RateBox.Instance.Show();
-                            print("review shown");
-                            reviewShown = true;
-                        }
-                        screenshot.highscore = true;
-                    } else {
+							RateBox.Instance.Show();
+							print("review shown");
+							reviewShown = true;
+						}
+						screenshot.highscore = true;
+					}
+					else
+					{
 						panelManager.CheckUnlockedPanels();
-                        screenshot.highscore = false;
-                    }
+						screenshot.highscore = false;
+						if (!gameIsSaved)
+                        {
+                            Save();
+							adMultiplier--;
+                            gameIsSaved = true;
+                        }
+						if (adMultiplier <= 0)
+                        {
+                            Advertisement.Show();
+                            adMultiplier = adMultiplierReset;
+                        }
+					} 
                     break;
                 default:
                     break;
@@ -233,6 +255,8 @@ public class RoundManager : MonoBehaviour {
     }
 
     public void KillPlayer(){
+		remainderUnlock = ((panelManager.currentObjective - score) +1);
+		panelManager.UnlockNewPanel();
         multiplierWhenDied = player.multiplier;
         currentState = State.Inactive;
         activeState = ActiveState.Dieing;
@@ -253,7 +277,6 @@ public class RoundManager : MonoBehaviour {
         player.hitPoints = 1;
         //multiplier.countDown = 0;
         //multiplier.coins = 0;
-        //adMultiplier--;
         //resetTimer = 10f;
         holdTimer = 1f;
         heldForLongEnough = false;
@@ -264,6 +287,11 @@ public class RoundManager : MonoBehaviour {
         }
         timesPlayed++;
 		reviewShown = false;
+
+		gameIsSaved = false;
+
+		panelManager.currentObjective = panelManager.nextObjective;
+		isObjectiveCompleted = false;
 		activeState = ActiveState.Holding;
         waveManager.currentStep = WaveManager.step.ChooseWeapon;
     }
@@ -293,7 +321,7 @@ public class RoundManager : MonoBehaviour {
 	}
 
 	public void ShowAdButton(){
-		if (score > 10 && !adShown){
+		if (!isObjectiveCompleted && !adShown && remainderUnlock < 20){
 			showAdButton = true;
 		} else {
 			showAdButton = false;

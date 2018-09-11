@@ -161,8 +161,9 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.FriedCandle.Knife
     iOS: com.Fynxx.knife
-  buildNumber: {}
-  AndroidBundleVersionCode: 3
+  buildNumber:
+    iOS: 4
+  AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0

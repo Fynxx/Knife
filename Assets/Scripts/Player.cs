@@ -36,7 +36,6 @@ public class Player : MonoBehaviour {
 	void Start(){
 		Application.targetFrameRate = 60;
 		roundManager = GameObject.Find("GameManager").GetComponent<RoundManager>();
-		bloodSplatter = GameObject.Find("BloodSplatterPivot");
 		audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 		audioSource = GetComponent<AudioSource>();      
         //spawner = GameObject.Find("PowerUpSpawner").GetComponent<Spawner>();
