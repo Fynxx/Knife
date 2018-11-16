@@ -31,8 +31,8 @@ public class Screenshot : MonoBehaviour
 	{
 		yield return new WaitForEndOfFrame();
 
-		Texture2D ss = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-		ss.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		Texture2D ss = new Texture2D(Screen.height, Screen.height, TextureFormat.RGB24, false);
+		ss.ReadPixels(new Rect(0, 0, Screen.height, Screen.height), 0, 0);
 		ss.Apply();
 
 		filePath = Path.Combine(Application.temporaryCachePath, "shared img.png");
@@ -41,20 +41,18 @@ public class Screenshot : MonoBehaviour
 		// To avoid memory leaks
 		Destroy(ss);
 
-		ShareTextSelector();
-
-		new NativeShare().AddFile(filePath).SetText(shareText).Share();
+		new NativeShare().AddFile(filePath).Share();
 		//print(shareText); 
 		roundManager.activeState = RoundManager.ActiveState.Dieing;
 		roundManager.inactiveState = RoundManager.InactiveState.Dead;
 	}
 
-	public void ShareTextSelector()
-	{
-		if (highscore){
-			shareText = ("I got a new high score of " + roundManager.score + " in #Schuriken! @FriedCandle");
-		} else {
-			shareText = ("I dodged " + roundManager.score + " weapons before I got hit by a " + roundManager.waveManager.currentWeapon + " #Schuriken @FriedCandle");
-        }
-	}
+	//public void ShareTextSelector()
+	//{
+	//	if (highscore){
+	//		shareText = ("I got a new high score of " + roundManager.score + " in #Schuriken! @FriedCandle");
+	//	} else {
+	//		shareText = ("I dodged " + roundManager.score + " weapons before I got hit by a " + roundManager.waveManager.currentWeapon + " #Schuriken @FriedCandle");
+ //       }
+	//}
 }

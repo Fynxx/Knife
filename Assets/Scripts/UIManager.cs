@@ -17,6 +17,9 @@ public class UIManager : MonoBehaviour
     public Text lowerLabel;
 	public Text pagesUnlockedFresh;
 	public Text pagesUnlockedEnded;
+	public Text objectiveBoxFresh;
+	public Text objectiveBoxEnded;
+	public Text watchAdPopupTitle;
 	//public Text xp;
 
     public Image dangerNorth;
@@ -40,6 +43,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup screen;
 	//public CanvasGroup hold;
 	public CanvasGroup resetConfirmation;
+	public CanvasGroup objectiveCompleteBanner;
 
     public Canvas menu;
     public Canvas game;
@@ -61,6 +65,10 @@ public class UIManager : MonoBehaviour
     public GameObject raycastBlockerAd;
 	public GameObject panels;
 
+	public bool isBannerTurnedOn;
+	public float bannerTimer;
+	public const float bannerTimerReset = 3f;
+
     void Start()
     {
         scoreLabelPlayLeft = GameObject.Find("ScoreLabelPlayLeft").GetComponent<Text>();
@@ -74,6 +82,9 @@ public class UIManager : MonoBehaviour
 		highScoreLabelMenu = GameObject.Find("HighScoreLabelMenu").GetComponent<Text>();
 		pagesUnlockedFresh = GameObject.Find("PagesUnlockedFresh").GetComponent<Text>();
 		pagesUnlockedEnded = GameObject.Find("PagesUnlockedEnded").GetComponent<Text>();
+		objectiveBoxFresh = GameObject.Find("ObjectiveLabelFresh").GetComponent<Text>();
+		objectiveBoxEnded = GameObject.Find("ObjectiveLabelEnded").GetComponent<Text>();
+		watchAdPopupTitle = GameObject.Find("WatchAdMessage").GetComponent<Text>();
 		//lowerLabel = GameObject.Find("LowerLabel").GetComponent<Text>();
 		//xp = GameObject.Find("TotalXP").GetComponent<Text>();
 
@@ -88,6 +99,7 @@ public class UIManager : MonoBehaviour
 		pause = GameObject.Find("RoundPause").GetComponent<CanvasGroup>();
 		cont = GameObject.Find("RoundContinue").GetComponent<CanvasGroup>();
 		screen = GameObject.Find("RoundScreenshot").GetComponent<CanvasGroup>();
+		objectiveCompleteBanner = GameObject.Find("ObjectiveComplete").GetComponent<CanvasGroup>();
         //hold = GameObject.Find("RoundHold").GetComponent<CanvasGroup>();
         //settings = GameObject.Find("GameSettings").GetComponent<CanvasGroup>();
 
@@ -117,6 +129,7 @@ public class UIManager : MonoBehaviour
         lowerMessages[0] = "Touch, Hold and Avoid the Shuriken!";
         lowerMessages[1] = " ";
         lowerMessages[2] = "Touch and Hold to play again!";
+		bannerTimer = bannerTimerReset;
     }
 
     void Update()
@@ -124,6 +137,7 @@ public class UIManager : MonoBehaviour
         CanvasSwitcher();
         CanvasGroupChanger();
 		WatchAdButton();
+		ObjectiveComplete();
         //DangerIndicator();
         //ScoreUiFlipper();
         //		testText.text = roundManager.currentDanger.ToString ();
@@ -141,6 +155,9 @@ public class UIManager : MonoBehaviour
 		pauseTimerLabel.text = roundManager.pauseTimer.ToString("f");
 		pagesUnlockedFresh.text = (panelManager.UnlockedPanels.Count+ "/" +(panelManager.AllPanels.Count-1) + " pages unlocked!");
 		pagesUnlockedEnded.text = pagesUnlockedFresh.text;
+		objectiveBoxEnded.text = ("Dodge " + (panelManager.nextObjective +1) + " weapons to unlock the new page!");
+		objectiveBoxFresh.text = ("Dodge " + (panelManager.nextObjective + 1) + " weapons to unlock the new page!");
+		watchAdPopupTitle.text = ("Only " + roundManager.remainderUnlock + " more waves!");
     }
 
     void CanvasGroupChanger()
@@ -176,6 +193,8 @@ public class UIManager : MonoBehaviour
                     cont.gameObject.SetActive(false);
 					screen.gameObject.SetActive(false);
 					fingerTarget.SetActive(false);
+					isBannerTurnedOn = false;
+					bannerTimer = bannerTimerReset;
                 }
                 if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
 					lowerLabel.text = lowerMessages[2];
@@ -270,6 +289,22 @@ public class UIManager : MonoBehaviour
                 break;
         }
     }
+
+	void ObjectiveComplete(){
+		if (roundManager.isObjectiveCompleted && !isBannerTurnedOn){
+			objectiveCompleteBanner.alpha = 1;
+			isBannerTurnedOn = true;
+        }
+		if (isBannerTurnedOn)
+		{
+			bannerTimer -= Time.deltaTime;
+			if (bannerTimer < 0)
+			{
+				bannerTimer = 0;
+				objectiveCompleteBanner.alpha = objectiveCompleteBanner.alpha - (Time.deltaTime);
+			}
+		}
+	}
 
 	void WatchAdButton(){
 		if (roundManager.showAdButton){
