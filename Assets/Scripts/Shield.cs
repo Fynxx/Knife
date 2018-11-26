@@ -33,7 +33,7 @@ public class Shield : PowerUp
 	{
 		shieldPickupBar.fillAmount = pickupTimer;
 		//print(spawner.currentState);
-		if (roundManager.currentState == State.Active)
+        if (roundManager.currentState == State.Playing)
         {
             if (lifeTime > 0)
             {

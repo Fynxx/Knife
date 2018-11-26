@@ -20,8 +20,8 @@ public class Screenshot : MonoBehaviour
 
 	public void TakeScreenshot()
 	{
-		roundManager.activeState = RoundManager.ActiveState.Screenshot;
-		roundManager.inactiveState = RoundManager.InactiveState.Screenshot;
+        roundManager.currentState = State.Screenshot;
+		//roundManager.inactiveState = RoundManager.InactiveState.Screenshot;
 		StartCoroutine(TakeScreen());
 		//roundManager.activeState = RoundManager.ActiveState.Dieing;
 		//roundManager.inactiveState = RoundManager.InactiveState.Dead;
@@ -43,8 +43,8 @@ public class Screenshot : MonoBehaviour
 
 		new NativeShare().AddFile(filePath).Share();
 		//print(shareText); 
-		roundManager.activeState = RoundManager.ActiveState.Dieing;
-		roundManager.inactiveState = RoundManager.InactiveState.Dead;
+		//roundManager.activeState = RoundManager.ActiveState.Dieing;
+        roundManager.currentState = State.Dead;
 	}
 
 	//public void ShareTextSelector()

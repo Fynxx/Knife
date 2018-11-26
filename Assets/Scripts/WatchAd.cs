@@ -22,8 +22,8 @@ public class WatchAd : MonoBehaviour {
         {
             case ShowResult.Finished:
                 Debug.Log("The ad was successfully shown.");
-				roundManager.activeState = RoundManager.ActiveState.Continue;
-				roundManager.inactiveState = RoundManager.InactiveState.Continue;
+                roundManager.currentState = State.Continue;
+				//roundManager.inactiveState = RoundManager.InactiveState.Continue;
 				roundManager.adShown = true;
 				roundManager.waveManager.ResetField();
                 break;

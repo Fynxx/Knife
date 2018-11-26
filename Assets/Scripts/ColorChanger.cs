@@ -18,7 +18,7 @@ public class ColorChanger : MonoBehaviour {
     
     void Update()
     {
-		if (rm.currentState == State.Active){
+        if (rm.currentState == State.Playing || rm.currentState == State.Holding){
 			background.GetComponent<Renderer>().material.color = white;
 		} else {
 			background.GetComponent<Renderer>().material.color = black;

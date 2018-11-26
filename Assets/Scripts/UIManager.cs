@@ -164,7 +164,7 @@ public class UIManager : MonoBehaviour
     {
         switch (roundManager.currentState)
         {
-			case State.Active:
+            case State.Playing:
 				panels.gameObject.SetActive(true);
 				fingerTarget.SetActive(true);
 				playing.gameObject.SetActive(true);
@@ -172,71 +172,77 @@ public class UIManager : MonoBehaviour
 				ended.gameObject.SetActive(false);
 				pause.gameObject.SetActive(false);            
 			    cont.gameObject.SetActive(false);
-				if (roundManager.activeState == RoundManager.ActiveState.Holding){
-					
-				}
-				if (roundManager.activeState == RoundManager.ActiveState.Playing)
-                {
-					playing.gameObject.SetActive(true);
-                }
 				break;
-           
-            case State.Inactive:
+            case State.Holding:
+                panels.gameObject.SetActive(true);
+                fingerTarget.SetActive(true);
+                playing.gameObject.SetActive(true);
+                start.gameObject.SetActive(false);
+                ended.gameObject.SetActive(false);
+                pause.gameObject.SetActive(false);
+                cont.gameObject.SetActive(false);
+                break;
+
+            case State.Start:
 				panels.gameObject.SetActive(false);
 				playing.gameObject.SetActive(false);
-                if (roundManager.inactiveState == RoundManager.InactiveState.Start)
-                {
-					lowerLabel.text = lowerMessages[0];
-					start.gameObject.SetActive(true);
-                    ended.gameObject.SetActive(false);
-                    pause.gameObject.SetActive(false);
-                    cont.gameObject.SetActive(false);
-					screen.gameObject.SetActive(false);
-					fingerTarget.SetActive(false);
-					isBannerTurnedOn = false;
-					bannerTimer = bannerTimerReset;
-                }
-                if (roundManager.inactiveState == RoundManager.InactiveState.Dead){
-					lowerLabel.text = lowerMessages[2];
-					start.gameObject.SetActive(false);
-                    ended.gameObject.SetActive(true);
-                    pause.gameObject.SetActive(false);
-                    cont.gameObject.SetActive(false);
-					screen.gameObject.SetActive(false);
-					fingerTarget.SetActive(false);
-                }
-
-                if (roundManager.inactiveState == RoundManager.InactiveState.Paused)
-                {
-					start.gameObject.SetActive(false);
-                    ended.gameObject.SetActive(false);
-					pause.gameObject.SetActive(true);
-                    cont.gameObject.SetActive(false);
-					screen.gameObject.SetActive(false);
-					fingerTarget.SetActive(false);
-                }
-
-				if (roundManager.inactiveState == RoundManager.InactiveState.Continue)
-                {
-					start.gameObject.SetActive(false);
-                    ended.gameObject.SetActive(false);
-                    pause.gameObject.SetActive(false);
-                    cont.gameObject.SetActive(true);
-					screen.gameObject.SetActive(false);
-					fingerTarget.SetActive(false);
-                }
-				if (roundManager.inactiveState == RoundManager.InactiveState.Screenshot)
-                {
-                    start.gameObject.SetActive(false);
-                    ended.gameObject.SetActive(false);
-                    pause.gameObject.SetActive(false);
-					cont.gameObject.SetActive(false);
-					screen.gameObject.SetActive(true);
-					fingerTarget.SetActive(true);
-                }
-                //settings.alpha = 0;
-                raycastBlockerAd.SetActive(false);
+              
+				lowerLabel.text = lowerMessages[0];
+				start.gameObject.SetActive(true);
+                ended.gameObject.SetActive(false);
+                pause.gameObject.SetActive(false);
+                cont.gameObject.SetActive(false);
+				screen.gameObject.SetActive(false);
+				fingerTarget.SetActive(false);
+				isBannerTurnedOn = false;
+				bannerTimer = bannerTimerReset;
                 break;
+
+            case State.Dead:
+                panels.gameObject.SetActive(false);
+                playing.gameObject.SetActive(false);
+                lowerLabel.text = lowerMessages[2];
+                start.gameObject.SetActive(false);
+                ended.gameObject.SetActive(true);
+                pause.gameObject.SetActive(false);
+                cont.gameObject.SetActive(false);
+                screen.gameObject.SetActive(false);
+                fingerTarget.SetActive(false);
+                break;
+            case State.Paused:
+                panels.gameObject.SetActive(false);
+                playing.gameObject.SetActive(false);
+                start.gameObject.SetActive(false);
+                ended.gameObject.SetActive(false);
+				pause.gameObject.SetActive(true);
+                cont.gameObject.SetActive(false);
+				screen.gameObject.SetActive(false);
+				fingerTarget.SetActive(false);
+
+                break;
+            case State.Continue:
+                panels.gameObject.SetActive(false);
+                playing.gameObject.SetActive(false);
+                start.gameObject.SetActive(false);
+                ended.gameObject.SetActive(false);
+                pause.gameObject.SetActive(false);
+                cont.gameObject.SetActive(true);
+				screen.gameObject.SetActive(false);
+				fingerTarget.SetActive(false);
+                
+                break;
+            case State.Screenshot:
+                panels.gameObject.SetActive(false);
+                playing.gameObject.SetActive(false);
+                start.gameObject.SetActive(false);
+                ended.gameObject.SetActive(false);
+                pause.gameObject.SetActive(false);
+				cont.gameObject.SetActive(false);
+				screen.gameObject.SetActive(true);
+				fingerTarget.SetActive(true);
+
+                break;
+                //settings.alpha = 0;
     //        case State.Settings:
     //            lowerLabel.text = null;
 

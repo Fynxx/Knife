@@ -83,7 +83,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void FingerTarget(){
-		if (Input.touchCount > 0 && roundManager.currentState == State.Active) {
+        if (Input.touchCount > 0 && roundManager.currentState == State.Playing || roundManager.currentState == State.Holding) {
             //transform.position = Camera.main.ScreenToWorldPoint (Input.GetTouch (0).position);
             start = transform.position;
             end = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);

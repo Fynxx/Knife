@@ -42,10 +42,10 @@ public class Coin : Collectable
 	void Update()
 	{
 		coinLifeBar.fillAmount = lifeTime;
-		if (roundManager.currentState == State.Active && currentState == state.active) 
-		{
-			transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
-		}
+		//if (roundManager.currentState == State.Active && currentState == state.active) 
+		//{
+		//	transform.Translate(Vector3.down * (Time.deltaTime * speed), Space.World);
+		//}
 
 		//switch (roundManager.currentRound)      
 		//{

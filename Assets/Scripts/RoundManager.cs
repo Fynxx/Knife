@@ -12,17 +12,17 @@ using System.IO;
 using TapticPlugin;
 using PaperPlaneTools;
 
-public enum State { Active, Inactive };
+public enum State { Reset, Start, Playing, Paused, Holding, Dead, Continue, Screenshot };
 
 public class RoundManager : MonoBehaviour {
 
 	public State currentState;
 
-    public enum ActiveState { Reset, Playing, Holding, Dieing, Continue, Screenshot };
-    public ActiveState activeState;
+    //public enum ActiveState { Reset, Playing, Holding, Dieing, Continue, Screenshot };
+    //public ActiveState activeState;
 
-    public enum InactiveState { Start, Paused, Dead, Ended, Continue, Screenshot };
-    public InactiveState inactiveState;
+    //public enum InactiveState { Start, Paused, Dead, Ended, Continue, Screenshot };
+    //public InactiveState inactiveState;
 
     public StateManager stateManager;
 	public Player player;
@@ -83,7 +83,7 @@ public class RoundManager : MonoBehaviour {
 		isDead = false;
 		reviewShown = false;
 		//currentDanger = danger.None;
-		currentState = State.Inactive;
+        currentState = State.Start;
 		//dangerSpawner = GameObject.Find ("ShurikenSpawner").GetComponent<ShurikenSpawner> ();
 		//peakNShoot = GameObject.Find("Peaknshoot").GetComponent<PeakNShoot>();
 		player = GameObject.Find("FingerTarget").GetComponent<Player>();
@@ -104,7 +104,7 @@ public class RoundManager : MonoBehaviour {
 	void Update () {
 		ChangeState ();
         States();
-		ShowAdButton();
+		//ShowAdButton();
 		//		DangerSwitcher ();
 	}
 
@@ -129,15 +129,15 @@ public class RoundManager : MonoBehaviour {
 								if (!IsPointerOverUIObject())
 								{
     								TapticManager.Impact(ImpactFeedback.Light);
-									if (inactiveState == InactiveState.Paused || inactiveState == InactiveState.Continue)
+                                    if (currentState == State.Paused || currentState == State.Continue)
     								{
-    									currentState = State.Active;
+    									//currentState = State.Active;
     									ResetGame();
     								}
     								else
     								{
-    									currentState = State.Active;
-    									activeState = ActiveState.Reset; // ResetGame and FullReset
+                                        currentState = State.Start;
+                                        currentState = State.Reset; // ResetGame and FullReset
     								}
     						    }
 								break;
@@ -145,7 +145,7 @@ public class RoundManager : MonoBehaviour {
 							case TouchPhase.Stationary:
 								break;
 							case TouchPhase.Ended:
-								currentState = State.Inactive;                        
+                                currentState = State.Dead;                        
 								break;
 							default:
 								//currentState = State.Fresh;
@@ -157,110 +157,163 @@ public class RoundManager : MonoBehaviour {
 		}
 
 		if (Input.touchCount > 1){
-			activeState = ActiveState.Reset;
+            currentState = State.Reset;
 		}
 	}
 
 	public void States()
 	{
-		if (currentState == State.Active)
-		{
-			switch (activeState)
-			{
-				case ActiveState.Reset:
-					FullReset();
-                    ResetGame();
-					//activeState = ;
-					break;
-				case ActiveState.Holding:
-					Holding(ActiveState.Playing);
-					break;
-				case ActiveState.Playing:
-					//playing shit            
-					break;
-				default:
-					activeState = ActiveState.Reset;
-					break;
-			}
-		}
-		else if (currentState == State.Inactive)
-		{      
-			if (activeState == ActiveState.Playing){
-				inactiveState = InactiveState.Paused;
-			} else if (activeState == ActiveState.Dieing){
-				inactiveState = InactiveState.Dead;
-			} else if (activeState == ActiveState.Continue){
-				inactiveState = InactiveState.Continue;
-			}
-			switch (inactiveState)
-			{
-				case InactiveState.Start:
-					break;
-				case InactiveState.Paused:
-                    pauseTimer -= Time.deltaTime;
+        switch(currentState){
+            case State.Reset:
+                FullReset();
+                ResetGame();
+                break;
+            case State.Holding:
+                Holding();
+                break;
+            case State.Paused:
+                pauseTimer -= Time.deltaTime;
 
-                    if (pauseTimer < 0)
+                if (pauseTimer < 0)
+                {
+                    currentState = State.Dead;
+                }
+                break;
+            case State.Dead:
+                //KillPlayer(); 
+                if (score > highscore)
+                {
+                    highscore = score;
+                    if (!gameIsSaved)
                     {
-						inactiveState = InactiveState.Dead;
+                        Save();
+                        gameIsSaved = true;
                     }
-                    break;
-				case InactiveState.Ended:
-					break;
-				case InactiveState.Screenshot:
-					//screenshot.TakeScreenshot();
-					//active- and inactive state are set back in screenshot.cs
+                    if (!reviewShown)
+                    {
+                        panelManager.CheckUnlockedPanels();
+                        RateBox.Instance.Show();
+                        print("review shown");
+                        reviewShown = true;
+                    }
+                    screenshot.highscore = true;
+                }
+                else
+                {
+                    panelManager.CheckUnlockedPanels();
+                    screenshot.highscore = false;
+                    if (!gameIsSaved)
+                    {
+                        Save();
+                        adMultiplier--;
+                        gameIsSaved = true;
+                    }
+                    if (adMultiplier <= 0)
+                    {
+                        Advertisement.Show();
+                        adMultiplier = adMultiplierReset;
+                    }
+                }
+                break;
+        }
+		//if (currentState == State.Active)
+		//{
+		//	switch (activeState)
+		//	{
+		//		case ActiveState.Reset:
+		//			FullReset();
+  //                  ResetGame();
+		//			//activeState = ;
+		//			break;
+		//		case ActiveState.Holding:
+		//			Holding();
+		//			break;
+		//		case ActiveState.Playing:
+		//			//playing shit            
+		//			break;
+		//		default:
+		//			activeState = ActiveState.Reset;
+		//			break;
+		//	}
+		//}
+		//else if (currentState == State.Inactive)
+		//{      
+			//if (activeState == ActiveState.Playing){
+			//	inactiveState = InactiveState.Paused;
+			//} else if (activeState == ActiveState.Dieing){
+			//	inactiveState = InactiveState.Dead;
+			//} else if (activeState == ActiveState.Continue){
+			//	inactiveState = InactiveState.Continue;
+			//}
+			//switch (inactiveState)
+			//{
+				//case InactiveState.Start:
+				//	break;
+				//case InactiveState.Paused:
+    //                pauseTimer -= Time.deltaTime;
 
-                    //activeState = ActiveState.Dieing;
-                    //inactiveState = InactiveState.Dead;
-                    break;
-                case InactiveState.Dead:
-					//KillPlayer(); 
-					if (score > highscore)
-					{
-						highscore = score;
-						if (!gameIsSaved){
-							Save();
-							gameIsSaved = true;
-                        }
-						if (!reviewShown)
-						{
-							panelManager.CheckUnlockedPanels();
-							RateBox.Instance.Show();
-							print("review shown");
-							reviewShown = true;
-						}
-						screenshot.highscore = true;
-					}
-					else
-					{
-						panelManager.CheckUnlockedPanels();
-						screenshot.highscore = false;
-						if (!gameIsSaved)
-                        {
-                            Save();
-							adMultiplier--;
-                            gameIsSaved = true;
-                        }
-						if (adMultiplier <= 0)
-                        {
-                            Advertisement.Show();
-                            adMultiplier = adMultiplierReset;
-                        }
-					} 
-                    break;
-                default:
-                    break;
-            }
-        }      
+    //                if (pauseTimer < 0)
+    //                {
+				//		inactiveState = InactiveState.Dead;
+    //                }
+    //                break;
+				//case InactiveState.Ended:
+				//	break;
+				//case InactiveState.Screenshot:
+					////screenshot.TakeScreenshot();
+					////active- and inactive state are set back in screenshot.cs
+
+     //               //activeState = ActiveState.Dieing;
+     //               //inactiveState = InactiveState.Dead;
+     //               break;
+     //           case InactiveState.Dead:
+					////KillPlayer(); 
+					//if (score > highscore)
+					//{
+					//	highscore = score;
+					//	if (!gameIsSaved){
+					//		Save();
+					//		gameIsSaved = true;
+     //                   }
+					//	if (!reviewShown)
+					//	{
+					//		panelManager.CheckUnlockedPanels();
+					//		RateBox.Instance.Show();
+					//		print("review shown");
+					//		reviewShown = true;
+					//	}
+					//	screenshot.highscore = true;
+					//}
+					//else
+					//{
+					//	panelManager.CheckUnlockedPanels();
+					//	screenshot.highscore = false;
+					//	if (!gameIsSaved)
+     //                   {
+     //                       Save();
+					//		adMultiplier--;
+     //                       gameIsSaved = true;
+     //                   }
+					//	if (adMultiplier <= 0)
+     //                   {
+     //                       Advertisement.Show();
+     //                       adMultiplier = adMultiplierReset;
+     //                   }
+					//} 
+            //        break;
+            //    default:
+            //        break;
+            //}
+        //}      
     }
 
     public void KillPlayer(){
 		remainderUnlock = ((panelManager.currentObjective - score) +1);
 		panelManager.UnlockNewPanel();
         multiplierWhenDied = player.multiplier;
-        currentState = State.Inactive;
-        activeState = ActiveState.Dieing;
-        inactiveState = InactiveState.Dead;
+        currentState = State.Dead;
+        //activeState = ActiveState.Dieing;
+        //inactiveState = InactiveState.Dead;
 	}
 
 	public void ResetGame(){
@@ -292,7 +345,7 @@ public class RoundManager : MonoBehaviour {
 
 		panelManager.currentObjective = panelManager.nextObjective;
 		isObjectiveCompleted = false;
-		activeState = ActiveState.Holding;
+        currentState = State.Holding;
         waveManager.currentStep = WaveManager.step.ChooseWeapon;
     }
 
@@ -304,20 +357,20 @@ public class RoundManager : MonoBehaviour {
 
 	}
 
-	public void Holding(ActiveState nextState){
+	public void Holding(){
 		holdTimer -= (Time.deltaTime);
         if (holdTimer <= 0f)
         {
             //heldForLongEnough = true;
-			activeState = nextState;
+            currentState = State.Playing;
         }
 	}
 
 	public void ResetButton(){
 		ResetGame();
 		FullReset();
-		currentState = State.Inactive;
-		inactiveState = InactiveState.Start;
+		//currentState = State.Inactive;
+        currentState = State.Start;
 	}
 
 	public void ShowAdButton(){

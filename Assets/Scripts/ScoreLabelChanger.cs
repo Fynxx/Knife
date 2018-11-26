@@ -24,7 +24,7 @@ public class ScoreLabelChanger : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (roundManager.currentState == State.Active)
+        if (roundManager.currentState == State.Playing)
 		{
 			//transform.gameObject.SetActive(true);
 			switch (player.multiplier)

@@ -83,7 +83,7 @@ public class WaveManager : MonoBehaviour
 
 	void WeaponSwitcher()
 	{
-		if (roundManager.activeState == RoundManager.ActiveState.Playing)
+        if (roundManager.currentState == State.Playing)
 		{
 			switch (currentStep)
 			{
@@ -141,7 +141,7 @@ public class WaveManager : MonoBehaviour
                     //}
 					break;
 				case step.Reset:
-					if (roundManager.activeState == RoundManager.ActiveState.Holding){
+                    if (roundManager.currentState == State.Holding){
 						currentStep = step.ChooseWeapon;
 					} else {
 						currentStep = step.AddScore;
